@@ -8,7 +8,12 @@
 * 运行结束后，会在font文件夹中生成压缩提取后的字体
 >安装cnpm
 * npm install -g cnpm --registry=https://registry.npm.taobao.org
-
+####package.json和package-lock.json
+>版本控制中 
+>~2.3.x 匹配最小单位更新（修改bug级别）
+>^2.x.x 匹配中间版本更新（修改api等）
+> 3.3.3 不更新   （重新架构，ui变更大版本）
+> 和package-lock.json关联： -lock文件确保重新安装依赖版本统一，更新版本需要同时更改两个文件。重新安装依赖默认走-lock文件。
 ####Node原生
 >基本形式
 ```javascript
