@@ -62,6 +62,8 @@ router.get('/',async (ctx,next)=>{
             },
         ]
     }
+}).get('/comp',async (ctx,next)=>{
+    ctx.body=['comp1','comp2','comp3']
 })
 
 app.use(router.routes());
