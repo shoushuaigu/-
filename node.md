@@ -1,6 +1,6 @@
 #Node常用模块和相关知识
 
-####常用模块
+##常用模块
 >font-spider 字蛛使用(提取用到的字体到一个文件,减小字体包大小)
 * 安装font-spider模块
 * 在字体文件夹（font）运行以下命令(路径为html文件路径) 
@@ -8,13 +8,60 @@
 * 运行结束后，会在font文件夹中生成压缩提取后的字体
 >安装cnpm
 * npm install -g cnpm --registry=https://registry.npm.taobao.org
-####package.json和package-lock.json
+##package.json和package-lock.json
 >版本控制中 
 >~2.3.x 匹配最小单位更新（修改bug级别）
 >^2.x.x 匹配中间版本更新（修改api等）
 > 3.3.3 不更新   （重新架构，ui变更大版本）
 > 和package-lock.json关联： -lock文件确保重新安装依赖版本统一，更新版本需要同时更改两个文件。重新安装依赖默认走-lock文件。
-####Node原生
+##node+vue相关问题
+-   跨域问题
+>vue+webpack开启的服务和node开启的服务端口不一致，出现跨域问题，解决办法，设置node服务的请求头。原生、express、koa跨域方法如下
+```javascript
+// 原生
+
+var http=require('http');
+var querystring=require('querystring');
+http.createServer(function(req,res){
+　　var postData='';
+　　req.setEncoding('utf8');
+    res.setHeader('Access-Control-Allow-Origin', '*');//此为解决跨域代码
+    // 星号可替换为需要解决跨域的具体域名（http://localhost:8082）
+ 
+　　req.on('data',function(chunk){
+　　　　postData+=chunk;
+　　});
+　　req.on('end',function(){
+　　　　res.end(postData+"hehe");
+　　});
+}).listen(3000);
+
+// express
+
+//allow custom header and CORS
+app.all('*',function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+ 
+ 
+  if (req.method == 'OPTIONS') {
+    res.send(200); /让options请求快速返回/
+  }
+  else {
+    next();
+  }
+// 还可以用cors插件直接解决
+var express = require('express')
+  , cors = require('cors')
+  , app = express();
+app.use(cors());
+
+// koa  用cors插件
+cors = require('koa-cors')
+app.use(cors())
+```
+##Node原生
 >基本形式
 ```javascript
 var http = require("http");
@@ -68,7 +115,7 @@ var eventEmitter = new events.EventEmitter();   //创建实例
 eventEmitter.on(eventname,(data)=>{});   //监听广播
 eventEmitter.emit(eventname,data);  //发送广播
 ```
-####MongoDb数据库
+##MongoDb数据库
 ```
 mongo 127.0.0.1:27017  链接(远程)数据库
 show dbs 查看数据库列表
@@ -125,7 +172,7 @@ db.cName.ensureIndex({"id":1,No:-1},{"unique":true}})		复合唯一索引
    ![](images/mongodb自启动-1.png)
    1. 运行后,在计算机管理--服务中找到MongoDB右键启动即可
    ![](images/mongodb自启动-2.png)
-####Node操作数据库(3.x)
+##Node操作数据库(3.x)
 >[3.x版本文档](http://mongodb.github.io/node-mongodb-native/3.0/quick-start/quick-start/)
 [2.x版本文档](http://mongodb.github.io/node-mongodb-native/2.2/quick-start/quick-start/)
 <font color=#f02>数据库操作都是异步</font>
@@ -154,7 +201,7 @@ db.cName.ensureIndex({"id":1,No:-1},{"unique":true}})		复合唯一索引
     deleteOne({})   //删
     ```
 ___
-####Koa+ES6
+##Koa+ES6
 >ES6
 ```javascript
 `字符串拼接数据${data}`     // 字符串拼接
@@ -460,7 +507,7 @@ Key发送到客户端,value储存到服务器
 ```
 
 
-####MongoDb封装
+##MongoDb封装
 >   1. 创建module文件夹,用于存放封装的模块
 >   1. 创建config.js配置文件
 >       ```javascript
@@ -581,7 +628,7 @@ Key发送到客户端,value储存到服务器
 >           module.exports=Db.getDbInstrance(); //暴露出的是一个实例,这个实例即单例
 >       ```
 
-####webScoket、socket.IO
+##webScoket、socket.IO
 >   1. 安装
 >       npm i socket.io
 >   1. 引入,初始化

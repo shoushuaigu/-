@@ -424,8 +424,8 @@ export default{
     1.v-if  在数据获取成功后在加载子组件
     2.watch 子组件内定义一个data，监听props传来的数据item，this.data = item的新值
     3.bus 组件间数据传递 
-        this.$emit('事件名',data) 触发事件
-        this.$on('事件名',data=>{获取数据回调}) 监听事件
+        bus.$emit('事件名',data) 触发事件
+        bus.$on('事件名',data=>{获取数据回调}) 监听事件
     4.设置props default 确保子组件中用到的数据键、类型都存在
     5.vuex    
 ```
@@ -511,6 +511,7 @@ export default new Router({
   ]
 })
 ```
+```javascript
 //设置此异步全局组件后，会单独生成一个js，点击加载组件按钮时，下载此js
 ```
 ![](images/异步组件1.png)
@@ -616,3 +617,38 @@ created(){
     }
 ```
 ---
+##transition
+```html
+<!-- enter-active-class="animated tada" 配合第三方插件设置进入等状态动画-->
+<!-- name属性对应class 没设置name时 默认class是 v-开头（v-enter、v-enter-active、v-enter-to、v-leave、v-leave-active、v-leave-to） -->
+<!-- 设置了name时 name的值替代v-，.fade-enter-active, .fade-leave-active -->
+<!-- model 过度模式 out-in 当前元素先离开，新元素再进来-->
+<transition name="fade" mode="out-in"
+  enter-active-class="animated tada"    
+  leave-active-class="animated bounceOutRight">
+      
+    <div v-if="show" key="t1">测试</div>  <!-- 包含多个组件时需要key -->
+    <div v-if="!show" key="t2">测试2</div>
+</transition>
+<transition enter-active-class="animated tada"
+    leave-active-class="animated bounceOutRight">
+  <router-view/>
+</transition>
+
+<!-- 列表过度 -->
+<!-- tag属性表示把transition-group标签解析成什么标签 -->
+<!-- 必须有key标识，确保唯一 -->
+<transition-group name="list" tag="span">
+  <span v-for="(item,index) in list" :key="index" class="list-item">{{item}}</span>
+</transition-group>
+<!-- 给列表元素设置transition属性 -->
+.list-item {    
+  transition: all 1s;
+  display: inline-block;
+  margin-right: 10px;
+}
+```
+```style
+<!-- 第三方库 -->
+@import'https://cdn.jsdelivr.net/npm/animate.css@3.5.1';
+```

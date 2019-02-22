@@ -1,18 +1,25 @@
 var Koa = require('koa'),
     router = require('koa-router')(),
     bodyparser = require('koa-bodyparser'),
+    path = require('path'),
+    render = require('koa-art-template'),
+    cors = require('koa-cors'),
     app = new Koa();
 
 app.use(bodyparser())
+app.use(cors())
+render(app,{
+    root:path.join(__dirname,'view'),
+    extname:'.html',
+})
 
 router.get('/',async (ctx,next)=>{
-    ctx.body={
-        name:'ddd',
-        age:'28'
-    }
+    await ctx.render('index',{data:'模板'})
 }).post('/login',async (ctx,next)=>{
     let data = ctx.request.body;
-    // console.log(data.username&&data.password);
+    console.log(data.username,data.password);
+    ctx.body = data;
+    return;
     if(data.username&&data.password==123456){
         ctx.body={
             code:1,
