@@ -648,7 +648,58 @@ created(){
   margin-right: 10px;
 }
 ```
-```style
-<!-- 第三方库 -->
+```javascript
+/*第三方库*/
 @import'https://cdn.jsdelivr.net/npm/animate.css@3.5.1';
+```
+##自定义指令
+```javascript
+// 全局组件
+Vue.directive('name',{
+  bind:function(el,binding){
+    el.innerText="name:"+binding.value;
+  }
+})
+
+// 局部组件指令
+// 组件中接受一个directives选项
+methds:{},
+directives:{
+  h:{
+    inserted:(el,binding)=>{
+      console.log(el.innerText='组件自定义指令');
+    }
+  }
+}
+```
+```html
+<div v-name="gss">
+<!-- name：gss -->
+</div>    
+<div v-h>
+<!-- 组件自定义指令 -->
+</div>    
+```
+```javascript
+// 自定义指令的钩子函数(都是可选参数，可多选)
+bind:只调用一次，指令第一次绑定到元素时调用。此时html结构可能还没渲染完成
+inserted:被绑定元素插入父节点时。此时能进行dom操作
+update:所在组件的 VNode（钩子函数的参数） 更新时调用，但是可能发生在其子 VNode 更新之前。指令的值可能发生了改变，也可能没有。但是你可以通过比较更新前后的值（通过binding参数里的vnode和oldVnode判断）来忽略不必要的模板更新
+componentUpdated:指令所在组件的 VNode 及其子 VNode 全部更新后调用
+unbind:只调用一次，指令与元素解绑时调用
+
+// 钩子函数的参数（el、binding、vnode、oldVnode）
+el:应用指令的当前元素
+
+binding:指令的相关参数都在binding对象中
+binding.name:指令名称（如上：name、h）
+binding.value:指令接受的值（如上：gss[string
+，number，array，object]）
+oldValue：指令绑定的前一个值，仅在 update 和 componentUpdated 钩子中可用。无论值是否改变都可用
+binding.expression:字符串形式的指令表达式。例如 v-my-directive="1 + 1" 中，表达式为 "1 + 1"
+binding.arg：传给指令的参数，可选。例如 v-my-directive:foo 中，参数为 "foo"
+binding.modifiers：一个包含修饰符的对象。例如：v-my-directive.foo.bar 中，修饰符对象为 { foo: true, bar: true }
+
+vnode：Vue 编译生成的虚拟节点
+oldVnode：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用
 ```
