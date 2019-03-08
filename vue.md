@@ -57,6 +57,21 @@ routes: [
     }
   ]
 ```
+##关于loading页
+>直接再index.html文件中写加载动画,渲染完成会自动删除
+```html
+<div id="app">
+  <div id="loader-wrapper">
+    <div id="loader"></div>
+    <div class="loader-section section-left"></div>
+    <div class="loader-section section-right"></div>
+    <div class="load_title">正在加载,请耐心等待
+      <br>
+      <span>V1.3</span>
+    </div>
+  </div>
+</div>
+```
 ##vue-cli3.0 
 >[文档](https://cli.vuejs.org/zh/config/#pages)
 ```javascript
@@ -139,6 +154,7 @@ export default new Router({
     <input v-model="firstName">
     <input v-model="lastName">
     <input v-model="fullName">
+    <input v-model="test2">
 </div>
 ```
 ```javascript
@@ -148,7 +164,8 @@ new Vue({
     data:{
         firstName:'',
         lastName:'',
-        fullName:''
+        fullName:'',
+        test:'读取和设置'
     },
     //watch方式实现fullName
     watch:{
@@ -166,6 +183,15 @@ new Vue({
     conputed:{
         fullName:function(){
             return this.firstName+this.lastName;
+        },
+        test2:{
+          get(){
+            return this.test;  //读取初始值
+          },
+          set(v){
+            console,log(v); //读取和设置
+            // test2改变时走这里
+          }
         }
     }
 })
@@ -702,4 +728,159 @@ binding.modifiers：一个包含修饰符的对象。例如：v-my-directive.foo
 
 vnode：Vue 编译生成的虚拟节点
 oldVnode：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用
+```
+##VUEX
+>拆分模块的形式
+npm i -S vuex
+创建store.js
+```javascript
+import Vue from 'vue'
+import Vuex from 'vuex'
+import user from './user'
+import getters from './getters'   //注意名称必须时getters
+Vue.use(Vuex)   //注意必须得.use
+const store = {
+  modules:{
+    user,
+  },
+  getters     //把需要访问的状态(变量)统一挂在getters上,在组件中通过mapGetters获取,注意名称必须时getters
+}
+export default store
+```
+>创建user.js和getters.js
+```JavaScript
+// user.js
+const user = {
+  state:{
+    name:'victor',
+    age:18
+  },
+  mutations:{
+    SET_NAME(state,data){
+      state.name=data
+    }
+  },
+  actions:{
+    updateName({commit,state},data){
+      let age = state.age   //能通过state直接获取其中的值
+      commit('SET_NAME',data)   //触发更改方法
+      // 可以返回
+    }
+  }
+}
+export default user
+
+//getters.js
+const getters={
+  name:state=>state.user.name,  //根据模块名(user)调用赋值
+}
+export default getters
+```
+>在main.js中引用store,并在new Vue中配置
+```javascript
+import store from './store'
+new Vue({
+  store
+})
+```
+>在模板中的使用
+```javascript
+// *.vue 
+import {mapGetters} from 'vuex'  //先引入辅助函数
+
+computed:{
+  ...mapGetters(['name']),  //即可调用user内的name直接使用
+  test:{
+    get(){
+      return 'test'
+    },
+    set(v){
+      this.$store.dispatch('updateName','gss')  //触发提交更改值,
+    }
+  }
+},
+methods:{
+  change(){
+    this.$store.dispatch('updateName','gss')  //触发提交更改值,
+  }
+}
+```
+##SSR
+
+##mock
+>拦截请求,模拟数据,前后端分离
+>npm i -S mockjs
+>创建mock目录>index.js和user.js
+```javascript
+//index.js
+import Mock from 'mockjs'   //引入
+import user from './user.js'   //引入user模块
+
+Mock.setup({            //配置一些全局设置
+  timeout:'300-600',    //超时时间
+})
+/*
+每一个模块单独拆分引入.如user相关的接口(user.js)表格相关的接口(table.js)。
+在main.js引入即可
+*/
+
+// user.js
+import ApiPath from './api/apiPath'     //  /userInfo   请求地址连接
+import Mock from 'mockjs'
+const Random = Mock.Random    //Random对象生成数据
+const reqData = {   
+  "code":0,
+    "data":{
+        "fullName":Random.cname(),
+        "word":Random.csentence(5,30)
+        "userId":10023,
+    },
+    "msg":"success"
+}
+
+Mock.mock(ApiPath.getInfo,'get',reqData)    //请求地址\get请求\返回数据
+```
+>区分开发环境和生产环境
+>由于mock会拦截请求,打包后连带mock一起打包,所以开生产环境下必须去掉拦截
+通过配置config下的dev.env.js和prod.env.js并更改在main.js中的引入方式即可
+```javascript
+// dev.env.js
+module.exports = merge(prodEnv, {
+  NODE_ENV: '"development"',
+  MOCK: 'true',
+})
+
+// prod.env.js
+module.exports = {
+  NODE_ENV: '"production"',
+  MOCK: 'false',
+}
+
+// main.js
+import Mock from './mock'   //测试环境这样引入
+process.env.MOCK && require('@/mock')   //这样引用,打包后不会拦截
+
+```
+>相关生产数据的api
+```javascript
+Random.domain()  //   "nhou.org.cn"
+Random.ip()   //  "74.97.41.159"
+Random.url()  //   "news://wrmt.na/rbcgbws"
+Random.province()  //"海南省"
+Random.city()   // "澳门半岛"
+Random.city(true) // "广东省 广州市"
+Random.csentence()   //  "会候权以解包党心要按总场火义国而片精。"默认句子12-18字节
+Random.csentence(5)  // "文斗领拉米。"
+Random.csentence(3, 5)  // "住验住"
+Random.cparagraph()  
+// "电力速率离老五准东其引是外适只王。体区先手天里己车发很指一照委争本。究利天易里根干铁多而提造干下志维。级素一门件一压路低表且太马。"(段落)
+Random.rgba()  // "rgba(122, 121, 242, 0.13)"
+Random.date('yyyy-MM-dd')  // "1975-04-27"
+Random.date('yy-MM-dd')    //   "00-01-08"
+Random.time()   // "05:06:06"
+Random.image('200x100', '#4A7BF7', 'Hello') //模拟图片(尺寸,背景色,图片内容)
+Random.cname()   // "黄秀英"
+Random.cfirst()   // "黄"
+Random.clast()  // "秀英"
+
 ```
