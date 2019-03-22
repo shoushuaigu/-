@@ -1,11 +1,4 @@
 #javascript代码段
-
-####常用正则
->取数字
-```javascript
-.replace(/[^0-9]/ig,"")
-```
-
 ####JQ相关
 >$.proxy方法
 >>改变this指向
@@ -55,7 +48,7 @@ module.exports.aa = a;  var obj = require('*.js');  //obj.aa==1
 ####关于浏览历史和返回跳转
 ```javascript
 document.referrer   //获取当前页面的上一页面
-
+location.replace('/*.html')     //跳转某页,不发通过浏览器返回按钮返回
 /* 控制返回跳转 */
 pushHistory(); 
 window.addEventListener("popstate", function(e) { 
@@ -71,7 +64,7 @@ function pushHistory() {
     }; 
     window.history.pushState(state, "title", "#"); 
 } 
-````
+```
 
 ####监听加载状态改变
 ```javascript
