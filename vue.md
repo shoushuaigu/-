@@ -678,6 +678,50 @@ created(){
 /*第三方库*/
 @import'https://cdn.jsdelivr.net/npm/animate.css@3.5.1';
 ```
+##provide,inject
+>父组件中通过provide来提供变量，然后在子组件中通过inject来注入变量。
+不论子组件有多深，只要调用了inject那么就可以注入provider中的数据。而不是局限于只能从当前父组件的prop属性来获取数据。
+>可用于信息传递和组件刷新等事件操作
+```javascript
+// 组件刷新通过app.vue中<router-view v-if="isRouterAlive"></router-view>的 v-if="isRouterAlive"控制重新渲染实现刷新
+// app.vue
+<router-view v-if="isRouterAlive"></router-view>
+provide(){
+  return{
+    reload:this.reload,     //传递的变量名是reload,值是reload方法
+    msg:"单纯传值",
+  }
+},
+data(){
+  return{
+    isRouterAlive:true,
+  }
+},
+methods:{
+  reload(){     //通过v-if重新渲染,刷新组件页面
+    this.isRouterAlive=false;
+    this.$nextTick(()=>{
+      this.isRouterAlive=true;  
+    })
+  }
+}
+
+// 子组件中(控制路由的菜单中)
+// slider.vue
+inject:["reload","msg"],      //inject接受变量reload
+data(){
+  return{
+    word:this.msg,            //接受msg的值"单纯传值"
+  }
+},
+methods:{
+  handlerReload(){      //组件中的刷新操作
+    this.reload()       //调用reload实现组件刷新
+  }
+}
+
+
+```
 ##自定义指令
 ```javascript
 // 全局组件

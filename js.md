@@ -145,7 +145,14 @@ function delCookie(name){
     decodeURI("http://cang.baidu.com/do/s?word=%E7%99%BE%E5%BA%A6&ct=21")
     // "http://cang.baidu.com/do/s?word=百度&ct=21"
 ```
-####
+####input表单验证
+
+```html
+<!-- 只能输入数字 -->
+<!-- \w是数字,字母,下划线;\W是与之相反的所有 -->
+<!-- onkeypress是按数字键事件 -->
+ <el-input class="add-moc-input" maxlength="11" v-model.trim="addMocForm.dealerTelephone" onKeyUp="value=value.replace(/[\W\_a-zA-Z]/g,'')" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" placeholder="请输入"></el-input>
+```
 ####
 ####
 ####
