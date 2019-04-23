@@ -44,6 +44,8 @@ const a = 1;
 module.exoprts = a;     var aa = require('*.js');   //aa==1
 module.exports.aa = a;  var obj = require('*.js');  //obj.aa==1
 ```
+####移动端适配js控制
+
 
 ####关于浏览历史和返回跳转
 ```javascript
