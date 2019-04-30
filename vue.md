@@ -57,6 +57,114 @@ routes: [
     }
   ]
 ```
+##axios
+>拦截器和跨域代理配置
+
+- 跨域代理配置
+```javascript
+/* 1.跨域代理 */
+  // config/dev.envjs
+  module.exports = merge(prodEnv, {
+    NODE_ENV: '"development"',
+    BASE_HOST:'"api"'               //配置开发环境baseurl
+  })
+  //config/pro.env.js
+  module.exports = {
+    NODE_ENV: '"production"',
+    BASE_HOST:'""'                  //也可以直接写成生产环境地址
+    //生产环境baseurl
+    // 主意要单引号+双引号形式
+    // 设置为空则会自动获取当前页面地址,如http://test-mall.900sup.com/adminrsou/jsp/index.jsp#/proList
+    // 获取的是http://test-mall.900sup.com/adminrsou/jsp,
+    // 但我们需要是http://test-mall.900sup.com,
+    // 所以先设置为空,在封装axios时根据BASE_HOST是否为空判断改变BASE_HOST的值
+  }
+  // config/index.js
+  dev:{
+    ...
+    proxyTable: {
+      '/api':{                      //api即开发环境的baseurl
+        target:'http://127.0.0.1:8080/',  //代理到此地址
+        changeOrigin:true,          //跨域配置
+        pathRewrite:{
+          '^/api':''                
+          //重写url,把以api开头的重写为空,
+          //即代理后的隐式地址为http://127.0.0.1:8080/index.shtml;
+          //而不是http://127.0.0.1:8080/api/index.shtml
+        }
+      }
+    },
+  }
+
+/* axios封装,拦截器 */
+  // 新建fetch.js
+  import axios from "axios"
+  import router from "../router"
+  import util from '../assets//js/util'
+  // util.hostPath即动态获取hostpath 如:http://test-mall.900sup.com
+  // 创建axios实例
+  const service = axios.create({
+      baseURL:process.env.BASE_HOST||util.hostPath,      //设置baseURl
+      // process.env.BASE_HOST根据之前配置,开发环境是api,生产环境是""
+      timeout:5000                        //超时时间
+  })
+
+
+  service.interceptors.request.use(       //请求拦截器
+      request=>{
+          // request.headers={'X-Custom-Header': 'foobar'}       //设置headers
+          // console.log(request);
+          return request
+      },
+      error=>{
+          return Promise.reject(error)
+      }
+  )
+
+
+  service.interceptors.response.use(
+      response =>{
+          if(response.headers.jsession_status===101){
+              // 登录状态判断
+              router.push({path:'/login'})
+              return
+          }
+          // if(response.status!==200){
+
+          // }
+          // console.log(response);
+          return response
+      },
+      error =>{
+          return Promise.reject(error)
+      }
+  )
+
+  export default service      //暴露实例
+  
+  // getData.js  封装get,post请求
+  import router from '../router/index'
+  import fetch from './fetch'
+
+  const getFetch =(url,data)=>{
+      return new Promise((resolve,reject)=>{
+          fetch.get(url,{params:data}).then(res=>{
+              resolve(res)
+          }).catch(error=>{
+              reject(error)
+          })
+      })
+  }
+  const postFetch =(url,data)=>{
+      return new Promise((resolve,reject)=>{
+          fetch.post(url,data).then(res=>{
+              resolve(res)
+          }).catch(error=>{
+              reject(error)
+          })
+      })
+  }
+```
 ##关于loading页
 >直接再index.html文件中写加载动画,渲染完成会自动删除
 ```html
