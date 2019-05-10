@@ -13,4 +13,11 @@ PWA 可以添加在用户的主屏幕上(Safari 支持度的问题，ios不行)
 #骨架屏
 ---
 [骨架屏方案](https://segmentfault.com/a/1190000016689372)
+[饿了么方案](https://github.com/Jocs/jocs.github.io/issues/22)
 [骨架屏事件](https://segmentfault.com/a/1190000014832185)
+>相关知识
+---
+[puppeteer](https://github.com/GoogleChrome/puppeteer)
+[headless chrom入门](http://www.imooc.com/article/47278)
+[headless chrom体验](https://www.jianshu.com/p/f12f7d363245)
+
