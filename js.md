@@ -153,7 +153,165 @@ function delCookie(name){
 <!-- onkeypress是按数字键事件 -->
  <el-input class="add-moc-input" maxlength="11" v-model.trim="addMocForm.dealerTelephone" onKeyUp="value=value.replace(/[\W\_a-zA-Z]/g,'')" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" placeholder="请输入"></el-input>
 ```
-####
+---
+####各种遍历
+>普通for循环
+>- for循环中的i在循环结束之后任然存在与作用域中，为了避免影响作用域中的其他变量，使用函数自执行的方式将其隔离起来()();
+>- 避免使用for(var i=0; i<demoArr.length的方式，这样的数组长度每次都被计算，效率低于上面的方式。也可以将变量声明放在for的前面来执行，提高阅读性
+```javascript
+    (function(){
+        for(i=0,len=arr.length,i<len,i++){}
+    })()
+```
+>foreach
+>- forEach方法与map方法很相似，也是对数组的所有成员依次执行参数函数。但是，forEach方法不返回值，只用来操作数据。也就是说，如果数组遍历的目的是为了得到返回值，那么使用map方法，否则使用forEach方法。forEach的用法与map方法一致，参数是一个函数，该函数同样接受三个参数：当前值、当前位置、整个数组。
+```javascript
+    arr.foreach(function(el,index,arr){})
+```
+>.map
+>- map方法将数组的所有成员依次传入参数函数，然后把每一次的执行结果组成一个新数组返回。
+    注意：是返回一个新数组，而不会改变原数组。
+>- map方法接受一个函数作为参数。该函数调用时，map方法向它传入三个参数：当前成员、当前位置和数组本身。
+>- 此外，map()循环还可以接受第二个参数，用来绑定回调函数内部的this变量，将回调函数内部的this对象，指向第二个参数，间接操作这个参数（一般是数组）。
+```javascript
+    var num = [1,2,3];
+    var arr = num.map(function(el,index,arr){
+        return el+1;
+    })
+    
+    arr     //[2,3,4]
+    num     //[1,2,3]
+    // 第二个参数,改变this指向
+    var num = [1,2];
+    var str = ['一','二','三']
+    var arr = num.map(function(el,index,arr){
+        return this[el]
+    },str)
+    arr     //['二','三']
+```
+>for ... in
+>- 一般用来遍历对象
+```javascript
+    var obj = {name:'gss',age:18};
+    for(var item in obj){
+        // if(obj.hasOwnProperty(item)){    //如果继承的属性是可遍历的，那么就会被for...in循环遍历到。但如果只想遍历自身的属性，使用for...in的时候，应该结合使用hasOwnProperty方法，在循环内部判断一下，某个属性是否为对象自身的属性。否则就可以产生遍历失真的情况
+            console.log(item);//name age    键(数组中是索引)
+            console.log(obj[item]);//gss 18    值
+        // }
+    }
+
+```
+>for ... of
+[链接](https://www.cnblogs.com/m2maomao/p/7743143.html)
+
+>filter
+>-  filter方法用于过滤数组成员，满足条件的成员组成一个新数组返回。它的参数是一个函数，所有数组成员依次执行该函数，返回结果为true的成员组成一个新数组返回。该方法不会改变原数组。
+>-  filter方法用于过滤数组成员，满足条件的成员组成一个新数组返回。它的参数是一个函数，所有数组成员依次执行该函数，返回结果为true的成员组成一个新数组返回。该方法不会改变原数组。
+>- 此外，filter方法也可以接受第二个参数，用来绑定参数函数内部的this变量。
+```javascript
+    var arr = [1,2,3,4];
+    var arrFilter = arr.filter(function(el,index,arr){
+        return el%2==0
+    })
+    arrFilter   //[2,4]
+    var obj = {max:3}
+    var arrFilter2 = arr.filter(function(el,index,arr){
+        return el<=this.max
+    },obj)
+    arrFilter2  //[1,2,3]
+```
+>some every
+>- 这两个方法类似“断言”（assert），返回一个布尔值，表示判断数组成员是否符合某种条件。
+    它们接受一个函数作为参数，所有数组成员依次执行该函数。该函数接受三个参数：当前成员、当前位置和整个数组，然后返回一个布尔值。
+>- some方法是只要一个成员的返回值是true，则整个some方法的返回值就是true，否则返回false。
+>- 而every方法则相反，所有成员的返回值都是true，整个every方法才返回true，否则返回false。两相比较，some()只要有一个是true，便返回true；而every()只要有一个是false，便返回false.
+```javascript
+    var arr = [1,2,3]
+    var bool = arr.some(function(el,index,arr){
+        return el>1
+    })
+    var bool2 = arr.every(function(el,index,arr){
+        return el>1
+    })
+    console.log(bool);  //true
+    console.log(bool2); //false
+```
+>reduce()和reduceRight
+>- reduce方法和reduceRight方法依次处理数组的每个成员，最终累计为一个值。它们的差别是，reduce是从左到右处理（从第一个成员到最后一个成员），reduceRight则是从右到左（从最后一个成员到第一个成员），其他完全一样。
+>- reduce方法和reduceRight方法的第一个参数都是一个函数。该函数接受以下四个参数。
+    累积变量，默认为数组的第一个成员
+    当前变量，默认为数组的第二个成员
+    当前位置（从0开始）
+    原数组
+    这四个参数之中，只有前两个是必须的，后两个则是可选的。
+>- 如果要对累积变量指定初值，可以把它放在reduce方法和reduceRight方法的第二个参数。
+```javascript
+    var arr = [1,2,3,4,5];
+    var he = arr.reduce(function(a,b,i,arr){
+        console.log(a, b)
+        return a+b
+    })
+    // 1 2
+    // 3 3
+    // 6 4
+    // 10 5
+
+    he  //15
+    var arr = [1,2,3,4,5];
+    var he = arr.reduce(function(a,b,i,arr){
+        return a+b
+    },10)
+    he  //25
+    var str = ['aa','bbb','ccc','dddd']
+    var lengthMax = str.reduce(function(a,b){
+        return a.length>b.length?a:b
+    })
+    lengthMax   //'dddd'
+```
+>Object.keys()遍历对象的属性
+```javascript
+    var obj = {
+        p1: 123,
+        p2: 456
+    };
+    Object.keys(obj)    //['p1','p2']
+```
+>Object.getOwnPropertyNames()遍历对象的属性
+>- Object.getOwnPropertyNames方法与Object.keys类似，也是接受一个对象作为参数，返回一个数组，包含了该对象自身的所有属性名。但它能返回不可枚举的属性。
+```javascript   
+var a = ['Hello', 'World'];
+ 
+Object.keys(a) // ["0", "1"]
+Object.getOwnPropertyNames(a) // ["0", "1", "length"]
+```
+>while(){}   do{}while()
+```javascript
+var i = 0;
+while(i<10){
+    console.log(i);
+    i++
+}
+
+do{
+    console.log(i);
+    i++
+}while(i<10)
+```
+<span style="color:red;">以上循环特征（相同与不同）：</span>
+1.foreach，map，filter循环中途是无法停止的，总是会将所有成员遍历完。
+2.他们都可以接受第二个参数，用来绑定回调函数内部的this变量，将回调函数内部的this对象，指向第二个参数，间接操作这个参数（一般是数组）。
+3.map方法不会跳过undefined和null，但是会跳过空位。forEach方法也会跳过数组的空位，这里就不举例了。for和while不会
+```javascript   
+    var f = function (n) { 
+        return 'a' 
+    }; 
+ 
+    [1, undefined, 2].map(f) // ["a", "a", "a"] 
+    [1, null, 2].map(f) // ["a", "a", "a"]
+    [1, , 2].map(f) // ["a", , "a"]
+```
+
+---
 ####
 ####
 ####
