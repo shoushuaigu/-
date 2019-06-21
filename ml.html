@@ -6,16 +6,21 @@
     <meta name="viewport" content="device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    
     <!-- 生产环境版本，优化了尺寸和速度 -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script>
         // var dpr = window.devicePixelRatio||1;
         // console.log(document.documentElement.clientWidth)
         // var scale = 1/dpr;
         
         // document.write('<meta name="viewport" content="iwidth=device-width,nitial-scale='+scale+', maximum-scale='+scale+', minimum-scale='+scale+', user-scalable=no">')
-        var clientW = document.documentElement.clientWidth>750?750:document.documentElement.clientWidth;
-        document.documentElement.style.fontSize = clientW / 7.5 + 'px';
+        //var clientW = document.documentElement.clientWidth>750?750:document.documentElement.clientWidth;
+        //document.documentElement.style.fontSize = clientW / 7.5 + 'px';
 
         // var phoneWidth =  parseInt(window.screen.width);
         // var phoneScale = phoneWidth/750;
@@ -37,36 +42,26 @@
             margin: 0;
         }
         #app{
-            background: #000;
-            width: 7.5rem;
+            background: #000; 
+            width: 800px;
             font-size: 14px;
             color: #fff;
             margin: auto;
-        }
-        input{
-            width: 2rem;
-            height: .4rem;
-            line-height: .4rem;
-        }
-        p{
-            font-size: 100px;
-            margin-left: 2rem;
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <input type="text" placeholder="开始时间" v-model="form.begin_n">
-        <input type="text" placeholder="结束时间" v-model="form.end_n">
-        <input type="text" disabled placeholder="总天数" v-model="form.total_days">
-        <button @click="handlerGetTotal">计算总天数</button>
-        <br>
-        <input type="text" placeholder="天数" v-model="form.days">
-        <input type="text" disabled placeholder="日期" v-model="form.overDate">
-        <button @click="handlerGetDate">计算日期</button>
-        <br>
-        <button @click="handlerReset">重置</button>
-        <p>cs</p>
+            <div class="block">
+                <span class="demonstration">选择开始结束时间</span>
+                <el-date-picker
+                    v-model="time_two"
+                    type="datetimerange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期">
+                </el-date-picker>
+            </div>
     </div>
 
 
@@ -79,9 +74,11 @@
                     end_n:'',
                     total_days:'',
                     days:'',
-                    overDate:''
+                    overDate:'',
+                    
                 },
-                
+                base:2,
+                time_two:[],
             },
             created() {
 
@@ -92,6 +89,7 @@
                     let time_2 = new Date(this.form.end_n).getTime();
                     let spas = time_2-time_1;
                     this.form.total_days=spas/1000/60/60/24;
+                    this.form.days = this.form.total_days/this.base;
                 },
                 handlerGetDate(){
                     let time_1 = new Date(this.form.begin_n).getTime();

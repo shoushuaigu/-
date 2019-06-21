@@ -1,4 +1,48 @@
 
+
+
+
+
+function* gen(){
+    yield 1
+    yield 2
+    yield 3
+}
+for(const v of gen()){
+    console.log(v);
+}
+
+return
+function test(){
+    for(const ags of arguments){
+        console.log(ags);
+        
+    }
+}
+test(1,2,3,4)
+return
+// var obj = {a:1,b:2}
+// for(const key of obj){
+//     console.log(key);
+    
+// }
+// return
+const setData = new Set([1,2,3,3,2,1]);
+console.log(setData);
+for(const v of setData){
+    console.log(v);
+    return
+}
+return
+const mapsData = new Map([['one',1],['two',2]])
+console.log(mapsData);
+for(const [key,value] of mapsData){
+    console.log(key);
+    console.log(value);
+    
+}
+
+return
 var arr = ['aa','bbb','ccc','ddd'];
 var str = 'abcdef'
 for(var v of arr){

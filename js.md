@@ -203,6 +203,71 @@ function delCookie(name){
 ```
 >for ... of
 [链接](https://www.cnblogs.com/m2maomao/p/7743143.html)
+for...of 语句创建一个循环来迭代可迭代的对象。在 ES6 中引入的 for...of 循环，以替代 for...in 和 forEach() ，并支持新的迭代协议。for...of 允许你遍历 Arrays（数组）, Strings（字符串）, Maps（映射）, Sets（集合）等可迭代的数据结构等。
+<span style="color:red">注意:var obj = {a:1,b:2}这种对象不能用for...of,能用fou...in.因为他不是iterable类型(array,set,map)</span>
+
+```javascript
+// string,arr
+var arr = ['aa','bbb','ccc','ddd'];
+var str = 'abcdef'
+for(var v of arr){
+    console.log(v);
+}
+for(var v of str){
+    console.log(v);
+}
+// Maps(映射)
+// Map 对象就是保存 key-value(键值) 对。对象和原始值可以用作 key(键)或 value(值)。Map 对象根据其插入方式迭代元素。换句话说， for...of 循环将为每次迭代返回一个 key-value(键值) 数组。
+const mapsData = new Map([['one',1],['two',2]])
+console.log(mapsData);  //Map { 'one' => 1, 'two' => 2 }
+for(const [key,value] of mapsData){
+    console.log(key);   //one   two
+    console.log(value); //1     2
+    
+}
+// Set(集合)
+// Set(集合) 对象允许你存储任何类型的唯一值，这些值可以是原始值或对象。可用于数组去重
+// Set(集合) 对象只是值的集合。 Set(集合) 元素的迭代基于其插入顺序。 Set(集合) 中的值只能发生一次。如果您创建一个具有多个相同元素的 Set(集合) ，那么它仍然被认为是单个元素。
+const setData = [...new Set([1,2,3,3,2,1])];    //[1,2,3]
+const setData = new Set([1,2,3,3,2,1]);
+for(const v of setData){
+    console.log(v); 
+    //1
+    //2
+    //3
+}
+// function的arguments
+function test(){
+    for(const ags of arguments){
+        console.log(ags);
+        
+    }
+}
+test(1,2,3,4)
+
+//generators(生成器)
+function* gen(){
+    yield 1
+    yield 2
+    yield 3
+}
+for(const v of gen()){
+    console.log(v);
+    //1
+    //2
+    //3
+}
+
+```
+[生成器](https://www.liaoxuefeng.com/wiki/1022910821149312/1023024381818112)
+```javascript
+// 退出迭代
+break
+return
+continue
+throw
+```
+
 
 >filter
 >-  filter方法用于过滤数组成员，满足条件的成员组成一个新数组返回。它的参数是一个函数，所有数组成员依次执行该函数，返回结果为true的成员组成一个新数组返回。该方法不会改变原数组。
@@ -312,6 +377,7 @@ do{
 ```
 
 ---
-####
+####Map,Set,generators
+[ES6](http://es6.ruanyifeng.com/#docs/set-map)
 ####
 ####
