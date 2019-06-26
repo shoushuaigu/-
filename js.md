@@ -379,5 +379,39 @@ do{
 ---
 ####Map,Set,generators
 [ES6](http://es6.ruanyifeng.com/#docs/set-map)
-####
+####面试相关
+- [浅谈setTimeout与Promise](https://juejin.im/post/5b7057b251882561381e69bf)
+    - 异步执行,与任务队列相关,settimeout只等定时的时间结束执行一次,promise确保在内的所有异步完成才返回
+- [内存泄露,溢出](https://blog.csdn.net/Judy_qiudie/article/details/82845692)
+    - 泄露原因
+        - 全局变量引起的:储存大数据时要即使置空或销毁
+        - 闭包:匿名函数访问父级变量
+        - dom清空或删除时,事件没关闭清除
+        - 计时器没关闭
+    - 如何不免
+        - 减少全局变量使用或生命周期较长的对象,即使清理无用的变量数据
+        - 注意循环逻辑,避免死循环
+        - 避免创建过的对象.不用的即使回收
+- call和apply
+    - 都是改变this指向,只是传参形式不同
+        - apply只有两个参数,新的thisObj和arguments数组
+        - call可以多个参数,新的thisObj和每个参数单独传入
+    - 用于继承
+    ```javascript
+    function animate(name,age){
+        this.name = name;
+        this.age = age
+    }
+
+    function an(name,age){
+        animate.apply(this,[name,age])
+    }
+    ```
+- 判断是数组
+    - arr instanceof Array  //true
+    - arr.__proto__.constructor == Array  //true
+    - Object.prototype.toString.call(o)== '[object Array]'; //true
+- 原型,原型链   [简书](https://www.jianshu.com/p/ddaa5179cda6)
+
+- 继承
 ####

@@ -1,9 +1,9 @@
 #VUE中常用知识点
 ##关于router
 ```javascript
-this.$router.push('/login');    //跳转
+this.$router.push('/login');    //跳转,会向history栈中添加记录,能正常返回
 this.$router.go(-1);
-
+this.$router.replace(); //替换当前history记录,即返回时还是本页,再返回才是上页
 this.$route     //route对象
 //全局路由导航
 router.beforeEach((to, from, next) => {
