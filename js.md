@@ -411,7 +411,36 @@ do{
     - arr instanceof Array  //true
     - arr.__proto__.constructor == Array  //true
     - Object.prototype.toString.call(o)== '[object Array]'; //true
+- 多维数组降维
+```javascript
+var arr = [1,2,[3,4,[5,6]]]
+// join+split
+arr.join(',').split(',')    //缺点:如果是数字,会变成字符串
+
+[].concat.apply([],arr)     //用concat+apply,把多维数组当参数传入;缺点:只能用于二维数组
+
+// 用递归
+let result = [],
+function unid1(arr){
+    for(let item of arr){
+        if(Object.prototype.toString.call(item).slice(8, -1)==='Array'){
+            unid1(item);
+        }else{
+            result.push(item);
+        }
+    }
+    return result;
+}
+
+```
+- [arr.from](https://www.cnblogs.com/jf-67/p/8440758.html)
+
 - 原型,原型链   [简书](https://www.jianshu.com/p/ddaa5179cda6)
 
 - 继承
+
+- 闭包 [通俗讲解](https://blog.csdn.net/coder_vader/article/details/78839686)
+    - 删除闭包中的变量或清空闭包
+        - 在闭包内返回一个方法,使变量=null
+        - 直接将闭包函数=null
 ####
