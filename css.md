@@ -81,6 +81,9 @@ ___
             margin-top: 100px;
         }
 - css的盒模型   content border padding margin
+    - 标准盒模型：width、height只包含content内容区
+    - 怪异盒模型：width、height包含content、padding、border
+    - 兼容: 加上doctype声明，让浏览器使用标准模式;用box-sizing
 - css文本效果 text-shadow:5px 5px 5px #ccc;
 - css文本溢出隐藏 
 ```

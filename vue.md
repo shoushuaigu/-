@@ -1,5 +1,76 @@
 #VUE中常用知识点
+##[双向数据绑定原理](https://www.cnblogs.com/wangjiachen666/p/9883916.html)
+
+## [vuex原理](https://www.jianshu.com/p/d95a7b8afa06)
+
 ##关于router
+### [原理篇](https://www.jianshu.com/p/4295aec31302)
+
+> vue-router通过hash与History interface两种方式实现前端路由
+1. hash 利用URL中的hash #
+2. 利用history interface在HTML5中新增的方法
+```javascript
+// 根据mode确定history实际的类并实例化(源码)
+switch (mode) {
+  case 'history':
+    this.history = new HTML5History(this, options.base)
+    break
+  case 'hash':
+    this.history = new HashHistory(this, options.base, this.fallback)
+    break
+  case 'abstract':
+    this.history = new AbstractHistory(this, options.base)
+    break
+  default:
+    if (process.env.NODE_ENV !== 'production') {
+      assert(false, `invalid mode: ${mode}`)
+    }
+}
+```
+> HashHistory和HTML5history的区别
+- hashhistory 的push和replace方法
+-- push
+![](images/hash.push.webp)
+```
+1 $router.push() //调用方法
+
+2 HashHistory.push() //根据hash模式调用,设置hash并添加到浏览器历史记录（添加到栈顶）（window.location.hash= XXX）
+
+3 History.transitionTo() //监测更新，更新则调用History.updateRoute()
+
+4 History.updateRoute() //更新路由
+
+5 {app._route= route} //替换当前app路由
+
+6 vm.render() //更新视图
+```
+--  replace
+![](images/hash.replace.webp)
+```
+replace (location: RawLocation, onComplete?: Function, onAbort?: Function) {
+  this.transitionTo(location, route => {
+    replaceHash(route.fullPath)
+    onComplete && onComplete(route)
+  }, onAbort)
+}
+  
+function replaceHash (path) {
+  const i = window.location.href.indexOf('#')
+  window.location.replace(
+    window.location.href.slice(0, i >= 0 ? i : 0) + '#' + path
+  )
+}
+```
+- htnl5history
+>History interface是浏览器历史记录栈提供的接口，通过back(), forward(), go()等方法，我们可以读取浏览器历史记录栈的信息，进行各种跳转操作。从HTML5开始，History interface有进一步修炼：<span style="color:red">pushState(), replaceState()</span> 这下不仅是读取了，还可以对浏览器历史记录栈进行修改
+1. push
+与hash模式类似，只是将window.hash改为history.pushState
+2. replace
+与hash模式类似，只是将window.replace改为history.replaceState
+3. 监听地址变化
+在HTML5History的构造函数中监听popState（window.onpopstate）
+
+---
 ```javascript
 this.$router.push('/login');    //跳转,会向history栈中添加记录,能正常返回
 this.$router.go(-1);
@@ -373,6 +444,8 @@ new Vue({
 Object.freeze(obj)  阻止修改现有数据,也就是说修改obj也不会再更新
 ```
 ---
+###[生命周期详解](https://www.cnblogs.com/goloving/p/8616989.html)
+
 ###生命周期之updated，dom元素更新(渲染)完成，如果要操作DOM，可以在此执行。一般用computed和watch替代
 ```javascript
 updated: function () {

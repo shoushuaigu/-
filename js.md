@@ -1,4 +1,5 @@
 #javascript代码段
+## [js初中高知识体系](https://www.cnblogs.com/hongqin/category/898509.html)
 ####JQ相关
 >$.proxy方法
 >>改变this指向
@@ -437,10 +438,15 @@ function unid1(arr){
 
 - 原型,原型链   [简书](https://www.jianshu.com/p/ddaa5179cda6)
 
-- 继承
+- [继承](https://segmentfault.com/a/1190000016441558)
 
 - 闭包 [通俗讲解](https://blog.csdn.net/coder_vader/article/details/78839686)
     - 删除闭包中的变量或清空闭包
         - 在闭包内返回一个方法,使变量=null
         - 直接将闭包函数=null
+- [js设计模式](https://blog.csdn.net/song_mou_xia/article/details/80763833)
+    - [资料](https://blog.csdn.net/qq_42564846/article/details/81583342)
+- [promise原理](https://blog.csdn.net/sinat_17775997/article/details/83376452)
+    - [资料](https://www.jianshu.com/p/f77d8c61c69a)
+    - [资料](https://www.jianshu.com/p/b4f0425b22a1)
 ####

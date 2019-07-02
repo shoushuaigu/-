@@ -74,9 +74,10 @@ stc.stroke()
 ```
 - 行内,块,空元素
 ```
-行内:span a b img input strong select em button textarea
+行内:span a b strong select em button textarea
 块元素: div p h1 ul li dl dt
-空元素: br hr link input img
+行内块; input img
+空元素: br hr link
 ```
 - web work 异步线程相关 [相关介绍](https://www.cnblogs.com/wishyouhappy/p/3766225.html)
 
