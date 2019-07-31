@@ -269,7 +269,85 @@ vue init webpack my-project 2.0创建项目
 通过vue ui创建的项目能够统一管理
 通过vue create my-project创建项目能自定义调试，预处理器，typescript等
 没了build和config等目录，若需要其他配置则需要自己手动配置
+```
+>根目录添加vue.config.js 配置相关项
+``` javascript
+添加vue.config.js后会默认走此文件配置信息
 
+1. 配置less
+  1),npm install less less-loader --save-dev
+  2),vue add style-resources-loader
+   vue add pluginName 是vue-cli3提供的。vue add 是用yarn安装插件的， yarn源的问题有可能导致失败。如果上面安装失败的话，就分别安装 style-resources-loader 和 vue-cli-plugin-style-resources-loader（前提是已经安装过 less less-loader）
+  3),在vue.config.js中配置如下
+
+2.配置代理(开发环境)
+  如下devServer
+
+3.配置mock
+  安装好mock后,模拟好数据后,直接在main.js中引入,即可,将不会走代理,直接走mock
+  注意跟进环境判断是否引入mock
+  process.env.NODE_ENV == 'development' && require('./mock/index.js')
+  环境变量配置如下
+
+4.环境变量配置
+  直接在根目录新建.env文件,即对应不同环境时的变量
+  .env                # 在所有的环境中被载入
+  .env.local          # 在所有的环境中被载入，但会被 git 忽略
+  .env.[mode]         # 只在指定的模式中被载入(.env.development;.env.production)
+  .env.[mode].local   # 只在指定的模式中被载入，但会被 git 忽略
+  设置变量: VUE_APP_+[key] = value  
+  如:VUE_APP_BASE_API = /api
+
+// vue.config.js
+const path = require("path")
+function resolve(dir){    //封装方法:引入路径
+    return path.join(__dirname, dir)
+}
+module.exports = {
+    publicPath:'./',    //baseUrl './'相对路径,可根据服务端路径更改
+    pluginOptions: {    //配置less全局变量
+        'style-resources-loader': {
+          preProcessor: 'less',
+          patterns: [
+              //注意：不能使用别名路径
+              path.resolve(__dirname,'./src/assets/css/minix.less'),
+              path.resolve(__dirname,'./src/assets/css/variable.less')
+          ]
+        }
+    },
+    css: {  //配置sass全局变量
+        loaderOptions: {
+            sass: {
+              // @是src的别名
+              data: `
+                @import "@/assets/variable.scss";
+              `
+            }
+        }
+    },
+    chainWebpack: (config =>{
+        config.resolve.alias      //设置别名
+            .set("SRC", resolve('src'))
+            .set("VIEWS", resolve('src/views'))
+            .set("COMPONTENTS", resolve('src/components'))
+            .set("CSS", resolve('src/assets/css'))
+            .set("JS", resolve('src/assets/js'))
+            .set("IMAGES", resolve('src/assets/images'))
+            .set("UTILS", resolve('src/utils'))
+    }),
+    devServer:{   //设置代理
+        proxy:{
+            '/api':{
+                target:'https://www.easy-mock.com/mock/5cd0f626e1fe52746e062a2b/jzy-btn',
+                changeOrigin:true,      //允许跨域
+                ws: true,       //websocket
+                pathRewrite:{
+                    '^/api':''
+                }
+            }
+        }
+    }
+}
 
 
 ```
@@ -958,19 +1036,26 @@ oldVnode：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中�
 >拆分模块的形式
 npm i -S vuex
 创建store.js
+数据持久化插件 vuex-persistedstate
 ```javascript
 import Vue from 'vue'
 import Vuex from 'vuex'
 import user from './user'
-import getters from './getters'   //注意名称必须时getters
+import getters from './getters'   //注意名称必须是getters
+import createPersistedState from 'vuex-persistedstate'  //引入数据持久化插件
 Vue.use(Vuex)   //注意必须得.use
-const store = {
-  modules:{
-    user,
-  },
-  getters     //把需要访问的状态(变量)统一挂在getters上,在组件中通过mapGetters获取,注意名称必须时getters
-}
-export default store
+export default new Vuex.Store({
+    getters,
+    state,
+    mutations,
+    actions,
+    modules:{
+      user,
+    },
+    plugins:[
+        createPersistedState({storage: window.sessionStorage})
+    ]
+})
 ```
 >创建user.js和getters.js
 ```JavaScript
@@ -986,9 +1071,9 @@ const user = {
     }
   },
   actions:{
-    updateName({commit,state},data){
-      let age = state.age   //能通过state直接获取其中的值
-      commit('SET_NAME',data)   //触发更改方法
+    updateName(store,data){
+      let age = store.state.age   //能通过store.state直接获取此模块中的值,可通过store.getter获得其他模块的值
+      store.commit('SET_NAME',data)   //触发更改方法
       // 可以返回
     }
   }
@@ -997,6 +1082,7 @@ export default user
 
 //getters.js
 const getters={
+  age: state=>state.age //不区分模块时直接用
   name:state=>state.user.name,  //根据模块名(user)调用赋值
 }
 export default getters
@@ -1026,6 +1112,7 @@ computed:{
 },
 methods:{
   change(){
+    this.$store.commit('SET_NAME','vic')
     this.$store.dispatch('updateName','gss')  //触发提交更改值,
   }
 }
