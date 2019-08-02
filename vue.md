@@ -1178,6 +1178,34 @@ const reqData = {
 }
 
 Mock.mock(ApiPath.getInfo,'get',reqData)    //请求地址\get请求\返回数据
+
+// 接受参数的情况
+const userInfo = function (config) {
+  /**
+    @config  
+      body:参数
+      type:请求类型
+      url:/tkp-coupon-web/couponActivation/records?couponNo=19273937
+  */
+  return Mock.mock({  //通过return Mock.mock 保障'data|5-10'能正常编译,不被编译成字符串
+    'success': true,
+    'code': 0,
+    'errorMessage': '登录成功',
+    'data|5-10': {
+      totalActivateNum: 200,
+      couponName: '个人无忧意外险',
+      'records|2-3': [{
+        'agentNo': 'TK230903',
+        'useNum': 100,
+        'policys|2-5': [{
+          'activateTime': '@date',
+          'appName': '@cname',
+        }]
+      }]
+    }
+  })
+}
+Mock.mock(/\/api\/user\.*/,'get',userInfo)  //正则匹配接口地址,.*表示获取所有类型的参数,get请求,回调函数返回数据
 ```
 >区分开发环境和生产环境
 >由于mock会拦截请求,打包后连带mock一起打包,所以开生产环境下必须去掉拦截
