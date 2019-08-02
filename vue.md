@@ -298,6 +298,21 @@ vue init webpack my-project 2.0创建项目
   设置变量: VUE_APP_+[key] = value  
   如:VUE_APP_BASE_API = /api
 
+5.添加环境
+  新建.env.qa 文件(测试环境)
+  // .env.qa中
+    NODE_ENV = production     //环境值为生产(打包之后)
+    VUE_APP_BASE_API = https://www.qa   //测试环境自定义值
+  修改package.json
+  // package.json中
+    "scripts": {
+      "serve": "vue-cli-service serve",
+      "build:prod": "vue-cli-service build",  //生产环境打包
+      "build:qa": "vue-cli-service build --mode qa",  //测试环境打包
+      "lint": "vue-cli-service lint"
+    },
+
+
 // vue.config.js
 const path = require("path")
 function resolve(dir){    //封装方法:引入路径
@@ -902,7 +917,7 @@ created(){
     }
 ```
 ---
-##transition
+####transition
 ```html
 <!-- enter-active-class="animated tada" 配合第三方插件设置进入等状态动画-->
 <!-- name属性对应class 没设置name时 默认class是 v-开头（v-enter、v-enter-active、v-enter-to、v-leave、v-leave-active、v-leave-to） -->
@@ -1053,7 +1068,19 @@ export default new Vuex.Store({
       user,
     },
     plugins:[
-        createPersistedState({storage: window.sessionStorage})
+        createPersistedState({
+          storage: window.sessionStorage    //自定义储存方式
+          // 1.默认是localStorage,但safari的无痕浏览模式不能用,
+          // 2.所以用sessionStorage,
+          /*
+          3.用cookie,结合js-cookie
+          storage: {
+            getItem: key => Cookies.get(key),
+            setItem: (key, value) => Cookies.set(key, value, { expires: 7 }),
+            removeItem: key => Cookies.remove(key)
+          }
+          */
+        })
     ]
 })
 ```

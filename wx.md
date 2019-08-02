@@ -130,4 +130,6 @@ wx.requestPayment(
 'complete':function(res){}
 })
 ```
+####wx-jssdk相关
+
 ####小程序相关
