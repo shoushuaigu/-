@@ -205,7 +205,7 @@ function delCookie(name){
 >for ... of
 [链接](https://www.cnblogs.com/m2maomao/p/7743143.html)
 for...of 语句创建一个循环来迭代可迭代的对象。在 ES6 中引入的 for...of 循环，以替代 for...in 和 forEach() ，并支持新的迭代协议。for...of 允许你遍历 Arrays（数组）, Strings（字符串）, Maps（映射）, Sets（集合）等可迭代的数据结构等。
-<span style="color:red">注意:var obj = {a:1,b:2}这种对象不能用for...of,能用fou...in.因为他不是iterable类型(array,set,map)</span>
+<span style="color:red">注意:var obj = {a:1,b:2}这种对象不能用for...of,能用for...in.因为他不是iterable类型(array,set,map)</span>
 
 ```javascript
 // string,arr
@@ -218,7 +218,7 @@ for(var v of str){
     console.log(v);
 }
 // Maps(映射)
-// Map 对象就是保存 key-value(键值) 对。对象和原始值可以用作 key(键)或 value(值)。Map 对象根据其插入方式迭代元素。换句话说， for...of 循环将为每次迭代返回一个 key-value(键值) 数组。
+// Map 对象就是保存 key-value(键值) 对。对象的原始值可以用作 key(键)或 value(值)。Map 对象根据其插入方式迭代元素。换句话说， for...of 循环将为每次迭代返回一个 key-value(键值) 数组。
 const mapsData = new Map([['one',1],['two',2]])
 console.log(mapsData);  //Map { 'one' => 1, 'two' => 2 }
 for(const [key,value] of mapsData){
@@ -366,7 +366,7 @@ do{
 <span style="color:red;">以上循环特征（相同与不同）：</span>
 1.foreach，map，filter循环中途是无法停止的，总是会将所有成员遍历完。
 2.他们都可以接受第二个参数，用来绑定回调函数内部的this变量，将回调函数内部的this对象，指向第二个参数，间接操作这个参数（一般是数组）。
-3.map方法不会跳过undefined和null，但是会跳过空位。forEach方法也会跳过数组的空位，这里就不举例了。for和while不会
+3.map方法不会跳过undefined和null，但是会跳过空位。forEach方法也会跳过数组的空位，for和while不会。
 ```javascript   
     var f = function (n) { 
         return 'a' 
