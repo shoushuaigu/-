@@ -313,3 +313,11 @@ document.getElementById('example')
 );
 ```
 
+##脚手架部分
+###安装、配置
+```javascript
+cnpm i react react-dom -S
+
+import React from 'react'
+import ReactDOM from 'react-dom'
+```

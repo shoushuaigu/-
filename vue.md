@@ -94,6 +94,8 @@ beforeRouteEnter (to, from, next) {
     // 在渲染该组件的对应路由被 confirm 前调用
     // 不！能！获取组件实例 `this`
     // 因为当守卫执行前，组件实例还没被创建
+    //如果页面结构通过v-if控制,可能渲染不出来
+    next(vm => {'next的回调,执行时间很晚,在mounted之后'})
 },
 //路由规则
 routes: [
@@ -420,7 +422,7 @@ export default new Router({
 ```
 ##computed和watch区别
 >computed:计算属性，一般通过其他变量计算得来一个属性、值。具有缓存属性，更节省性能，参与计算的变量不变就会走缓存，不会重复执行
->watch:监听器，一般用于监听某值的变化，实现业务；监听数据来源包括data，props，computed
+>watch:监听器，一般用于监听某值的变化，实现业务；监听数据来源包括data，props，computed;相关参数immediate：true  即时  第一次接受值时也监听到,deep：true 深度监听
 ```html
 <div id="app">
     <input v-model="firstName">
@@ -443,6 +445,8 @@ new Vue({
     watch:{
         firstName:function(n){
             this.fullName=n+this.lastName;
+            //immediate：true  即时  第一次接受值时也监听到
+            //deep：true 深度监听
         },
         lastName:function(n){
             this.fullName = n+this.firstName;
@@ -470,6 +474,28 @@ new Vue({
 
 
 ```
+###watch 监听$route时的各种情况(每个组件中都设置了监听;所有监听只要能触发,就会一直触发,不管到哪页)
+- app.vue中设置$route监听且没有keep-alive
+  - 此监听在所有跳转中都生效
+  - 在其他组件中设置的$router监听,不生效,只有跳转此组件的子路由时,此组件的$router监听生效
+  ![](images/watch_route-1.png)
+- app.vue中设置$route监听且设置缓存(keep-alive)list页
+  - ![](images/watch_route-2.png)
+- app.vue中设$route监听,页面全部缓存
+  - 所有页面的监听都生效
+- app中不设置监听,不缓存
+  - 只有父子路由跳转监听生效
+- app不监听,缓存list页
+  - 缓存页的监听生效
+- app不监听,全部缓存
+  - 所有监听都生效
+>总结:
+app中的监听一直生效
+设置缓存的页,触发后一直生效
+父子路由间跳转一直生效
+不设置缓存,组件路由监听全不生效
+由于app是所有的父级,所以也可以说只有父子路由间跳转触发监听
+监听只发生在当前页或没被销毁时(缓存时),因为$route是个全局的属性,所以会有一直被监听的情况
 ##bus(eventBus)组件间数据传递
 >父子组件、跨组件信息传递
 1.创建bus.js
