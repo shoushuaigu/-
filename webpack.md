@@ -84,8 +84,43 @@ module.exports = {  //暴露配置信息
                 test:/\.js|jsx$/,       //js或jsx结尾文件
                 use:'babel-loader',     //loader
                 exclude:/node_modules/  //排除node_modules文件夹
+            },
+            {
+                test:/\.css$/,
+                use:['style-loader','css-loader'],  //从右向左解析
+            },
+            {
+                test:/\.less$/,
+                use:[
+                    'style-loader',
+                    {   //详细配置某项loader
+                        loader:'css-loader',    //loader
+                        options:{   //配置loader
+                            modules:{
+                                mode:'local',   //开启模块化
+                                localIdentName:'[path][name]__[local]--[hash:base64:5]'
+                                //模块化后类名组成配置
+                                //path:src-css  当前文件路径
+                                //name:list 文件名
+                                //local:box 类名或id
+                                //hash:哈希值,可配置长度
+                            }
+                        }
+                    },
+                    'less-loader'
+                ]
+            },
+            {
+                test:/\.ttf|woff|woff2|eot|svg$/,
+                use:'url-loader'    //打包处理字体文件
             }
         ]
+    },
+    resolve:{
+        extensions:['.js','.jsx','.less','.css'],   //引入时能省略后缀
+        alias:{ //目录别名  
+            '@':path.join(__dirname,'./src')    //import * from '@/index.js'
+        }
     }
 }
 ```
@@ -101,6 +136,8 @@ module.exports = {  //暴露配置信息
 - 插件plugins
     - babel-plugin-transform-runtime
         - 更全面的编译 如 Generator, Set, 或者一些方法、新特性
+    - babel-plugin-import
+        - 配置按需引用的
 - 语法presets
     - babel-preset-env
         - 告诉babel只编译批准的内容，相当于babel-preset-es2015, es2016, es2017及最新版本。通过它可以使用最新的js语法
@@ -113,6 +150,16 @@ module.exports = {  //暴露配置信息
 ```json
 {
     "presets":["env","stage-0","react"],    //语法
-    "plugins":["transform-runtime"]         //插件
+    "plugins": [                            //插件
+        "transform-runtime",
+        [
+            "import",
+            {
+                "libraryName":"antd",
+                "libraryDirectory":"es",
+                "style":"css"
+            }
+        ]
+    ],
 }
 ```
