@@ -1,6 +1,59 @@
 
 
 
+let tick = (duration)=>{
+    return new Promise((resolve)=>{
+      setTimeout(function () {
+        console.log(duration,new Date());
+        resolve(duration);
+      },duration);
+    });
+  };
+  
+  function *generator() {
+    var result = yield tick(2000);
+    console.log('result = ',result);
+    result = yield tick(4000);
+    console.log('result = ',result);
+    result = yield tick(3000);
+    console.log('result = ',result);
+  }
+  
+  let run = (generator,res)=>{
+    var result = generator.next(res);
+    if(result.done) return;
+    result.value.then((res)=>{
+      run(generator,res);
+    });
+  }
+  
+  run(generator());
+  return
+
+let go = function*(x) {
+    console.log('x', x);
+    let a = yield x;
+    console.log('xx', x);
+
+    // console.log('a', a);
+
+    // let b = yield (x + 1) + a;
+
+    // yield a + b;
+
+    // console.log('a + b =', a + b);
+
+    // return a + b;
+  }
+//   go(10);
+//   console.log(go(10),'1111')
+  let gg = go(10);
+  console.log(gg.next(),'2222');
+//   console.log(gg.next(1000),'3333');
+//   console.log(gg.next(50),'4444');
+//   console.log(gg.next(8),'5555');
+//   console.log(gg.next(8),'6666');
+  return
 
 
 function* gen(){
@@ -9,7 +62,12 @@ function* gen(){
     yield 3
 }
 for(const v of gen()){
-    console.log(v);
+    console.log(v,'-');
+    /*
+        1 '-'
+        2 '-'
+        3 '-'
+     */
 }
 
 return

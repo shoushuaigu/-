@@ -455,6 +455,121 @@ ReactDOM.render(<ListBox lists={lists}></ListBox>,document.getElementById('app')
     }
     ```
 
+###高阶组件
+>定义一个方法,接受一个组件作为参数,进行相关操作后再返回这个组件
+```js
+// superComponent.js    高阶组件
+import React from 'react'
+export default function(Wapper){    //注意:Wapper要大写,满足组件命名
+    return class extends React.Component{   //返回一个组件
+        render(){
+            const time = new Date().toLocaleDateString()
+            return(
+                <Wapper time={time}></Wapper>   //为组件添加了time属性,并返回
+            )
+        }
+    }
+}
+// someComponent.js     配引用的组件
+class SomeComponent extends React.Component{
+    render(){
+        return(
+            <div>
+                <time>{this.props.time}</time>
+                <p>此组件为高阶组件作为参数处理的组件,具有了time属性</p>
+            </div>
+        )
+    }
+}
+export default SuperComponent(SomeComponent)
+```
+
+###函数作为子组件
+>this.props.children()是一个函数,在组件中可以把一些值传递出来,控制组件的内容
+```js
+class FnComponent extends React.Component{
+    render(){
+        return(
+            <div>
+                <p>组件内部</p>
+                {this.props.children('函数的参数')}
+            </div>
+        )
+    }
+}
+<FnComponent>
+    {
+        val=>(<div>从内部传出来的数据:{val}</div>)  //(函数的参数)
+    }
+</FnComponent>
+```
+
+###context api  上下文
+>解决组件通信,通过React.createContext(data)创建
+>.Provider父容器,绑定值并监听变化
+>.Consumer子容器,能接受到父容器的值
+```js
+const cn_ = {
+    commit:'提交',
+    cancel:'关闭'
+}
+const en_ = {
+    commit:'commit',
+    cancel:'cancel'
+}
+const localContext = React.createContext(cn_)   //创建上下文,默认数据是cn_
+
+class LocalProvider extends React.Component{
+    state={locale:cn_}
+    toggleLocal = () =>{
+        const locale = this.state.locale === cn_?en_:cn_
+        this.setState({locale})
+    }
+    render(){
+        return(
+            <localContext.Provider value={this.state.locale}>
+                <button onClick={this.toggleLocal}>切换中英文</button>
+                <localContext.Consumer>
+                    {
+                        val=>(  //接受到的父容器的数据
+                            <div>
+                                <button>{val.commit}</button>
+                                <button>{val.cancel}</button>
+                            </div>
+                        )
+                    }
+                </localContext.Consumer>
+                
+                {this.props.children}   //也可拆分组件
+            </localContext.Provider>
+        )
+    }
+}
+
+class LocalButton extends React.Component{
+    render(){
+        return(
+            <localContext.Consumer>
+                {
+                    val=>(  //接受到的父容器的数据
+                        <div>
+                            <button>{val.commit}</button>
+                            <button>{val.cancel}</button>
+                        </div>
+                    )
+                }
+            </localContext.Consumer>
+        )
+    }
+}
+
+<LocalProvider>
+    <LocalButton></LocalButton>
+</LocalProvider>
+<LocalButton></LocalButton>     //注意:放到provider外也能用,默认值是创建context时的初始值,切不会随父容器的值改变而改变
+
+```
+
 ###defaultProps,propTypes
 ---
 ```js
@@ -512,6 +627,7 @@ class demo extends React.Component{
 
 ###[react-router-dom](https://reacttraining.com/react-router/web/example/basic)
 ---
+![](./images/react-router.png)
 - 安装,配置
     ```js
     npm i -S react-router-dom
@@ -530,6 +646,62 @@ class demo extends React.Component{
     <Route path={`${path}:name`} />
     <Link to={`${path}/gss`}/>  ===>    localhost:8080/news/gsss
     获取参数:this.props.match.params    ===> {name:'gss'}
+    //动态路由匹配a/:id;a/sub;a;即跳转到a路由的三种情况:1带参数,2访问a的子路由,3直接访问a路由
+    import React from 'react'
+    import {HashRouter as Router,Route,Link,Switch} from 'react-router-dom'
+
+    class A extends React.Component{
+        componentDidMount(){
+            console.log(this.props)
+            //this.props.match.path ==>/a
+        }
+        render(){
+            return(
+                <div>
+                    <p>Component A</p>
+                    <Switch>
+                        <Route exact path={`${this.props.match.path}`} render={()=>(<div>动态路由匹配</div>)}/> //path设为跟路由,即此组件的路由/a;注意render的参数是props,返回值是一个组件(如下面嵌套路由部分)
+                        <Route exact path={`${this.props.match.path}/sub`} render={(props)=>(<div>动态路由匹配{props.location.pathname}</div>)}/> //path=/a/sub   精准匹配子路由sub
+                        <Route exact path={`${this.props.match.path}/:id`} render={(props)=>(<div>动态路由匹配id :{props.match.params.id}</div>)}/>   //path=/a/123   匹配id参数
+                    </Switch>
+                </div>
+            )
+        }
+    }
+    class B extends React.Component{
+        render(){
+            return(
+                <div>Component B</div>
+            )
+        }
+    }
+
+    class App extends React.Component{
+        render(){
+            return(
+                <Router>
+                    <div>
+                        <Link to='/a/123'>to A id 123</Link>    //跳转a路由的三种方式
+                        <br/>
+                        <br/>
+                        <Link to='/a/sub'>to A /sub</Link>
+                        <br/>
+                        <br/>
+                        <Link to='/a'>to A</Link>
+                        <br/>
+                        <br/>
+                        <Link to='/b'>to B</Link>
+                    </div>
+                    <Route path='/a' component={A}/>    //注意此处定义Route只写/a,具体匹配在a组件中设置
+                    <Route path='/b' component={B}/>
+                </Router>
+            )
+        }
+    }
+
+    export default App
+
+
     ```
 - get传值
     ```jsx
@@ -599,6 +771,8 @@ class demo extends React.Component{
             }
         }
     ```
+
+- 重定向 <Redirect to="/path" />
 
 - 嵌套路由
     - routes抽离
@@ -715,3 +889,58 @@ class demo extends React.Component{
     ```
 - 页面刷新404问题
     - 改为HashRouter模式
+
+###redux
+>npm i -S redux     不是react专用,可单独使用
+>单项数据流
+- import {createStore,combineReducers,bindActionCreators} from 'redux
+- createStore | 创建store,参数为reducer
+    - const store = createStore(reducer)
+- combineReducers | 合并多个reducer
+    - const rootReducer = combineReducers(allReducers)
+- bindActionCreators | 简化dispatch触发
+    ```js
+    function plusOneFn () {     //一个action
+        return {
+            type:PLUS_ONE
+        }
+    }
+    const plusOne = bindActionCreators(plusOneFn,store.dispatch)    //处理action
+    plusOne()   //调用 相当于 store.dispatch(plusOneFn)
+    ```
+---
+- store | 根据reducer初始化store,初始state值是reducer里传入的默认值
+    - getState()
+    - dispatch(action)
+    - subscribe(listener)
+- action | 定义type和传递新的参数触发reducer
+    ```js
+    export function addList(name,content,no){
+        return {
+            type:ADD_LIST,     //必要,固定为type,触发reducer是根据type来的
+            payload:{name,content,no}
+        }
+    }
+    
+    ```
+- reducer | 一个函数,根据action.type触发store的变化
+    ```js
+    export default function (state=[],action){      //两个参数,state即store的值,action用于接受type,判断是否触发
+        switch(action.type){
+            case ADD_LIST:
+                return{             //reducer返回的是新的state,整体替换原来的值
+                    ...state,       //保留原来的值
+                    payload:[...state.list,action.payload]     //更新原来store里list的值,在list数组中添加一项action.payload
+                }
+            default:
+                return state
+        }
+    }
+    ```
+###异步处理中间件
+
+####redux-thunk
+
+####redux-saga
+
+###react-redux

@@ -47,6 +47,7 @@ module.exports.aa = a;  var obj = require('*.js');  //obj.aa==1
 ```
 
 ####关于浏览历史和返回跳转
+![](./images/router.png)
 ```javascript
 document.referrer   //获取当前页面的上一页面
 location.replace('/*.html')     //跳转某页,不发通过浏览器返回按钮返回
