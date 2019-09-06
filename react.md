@@ -601,6 +601,7 @@ class demo extends React.Component{
     <li style={objcss.list}></li>
     ```
 - 样式表(配置webpack,cssloader,lessloader)
+
     - 导入
     ```js
     import listCss from '../css/list'       //设置css模块化(scoped)是能导出class,id对象
@@ -944,3 +945,94 @@ class demo extends React.Component{
 ####redux-saga
 
 ###react-redux
+
+##create-react-app
+>安装 cnpm i -g create-react-app
+>create-react-app name
+
+- 暴露配置文件(webpack等相关配置)
+    - yarn eject
+    - 可能失败原因:存在为提交的git,commit一下再yarn eject即可
+- 配置less
+    - yarn add less-loader less
+    - webpack.config.js中参考sass(默认配置了sass)配置即可
+- yarn add antd
+    - yarn add babel-plugin-import (按需加载antd的样式)
+    - webpack.config.js中修改js解析插件设置
+    ```js
+    {
+              test: /\.(js|mjs|jsx|ts|tsx)$/,
+              include: paths.appSrc,
+              loader: require.resolve('babel-loader'),
+              options: {
+                customize: require.resolve(
+                  'babel-preset-react-app/webpack-overrides'
+                ),
+                
+                plugins: [
+                  [
+                    require.resolve('babel-plugin-named-asset-import'),
+                    {
+                      loaderMap: {
+                        svg: {
+                          ReactComponent:
+                            '@svgr/webpack?-svgo,+titleProp,+ref![path]',
+                        },
+                      },
+                    },
+                  ],
+                  [ //注意,此处设置按需加载
+                    require.resolve('babel-plugin-import'),
+                    {libraryName: 'antd', libraryDirectory: 'es', style: 'css',}
+                  ]
+                ],
+                cacheDirectory: true,
+                cacheCompression: isEnvProduction,
+                compact: isEnvProduction,
+              },
+            },
+    ```
+    - [按需加载方法1(可能不生效)](https://blog.csdn.net/qq_42833001/article/details/87456717)
+    - [按需加载方法2(可能不生效)](https://www.jianshu.com/p/bb6bf56478a9)
+    - [按需加载,配置主题方法3](https://blog.csdn.net/qwe502763576/article/details/83242823)
+    - [配置主题](https://ant.design/docs/react/customize-theme-cn)
+        - 修改按需加载时配置的babel
+        ```js
+        [
+            require.resolve('babel-plugin-import'),
+            {libraryName: 'antd', libraryDirectory: 'es', style: true,}//style:'css'改为true
+        ]
+        //注意:babel配置可能是在package.json中配置的,只要把css改为true即可
+        ```
+        - 修改less-loader配置的方法
+        ```js
+        const getStyleLoaders = (cssOptions, preProcessor)=>{
+            ...
+            if (preProcessor) {
+                const lessOptionsModifyVars = {     //定义主题相关色值等
+                    '@primary-color': '#f02',
+                    '@link-color': '#f02',
+                    '@border-radius-base': '2px',
+                    // or
+                    //'hack': `true; @import "${path.join(__dirname,'../src/style/theme')}.less";`, // Override with less file;引入自定义less文件
+                }
+                loaders.push(
+                    {
+                    loader: require.resolve('resolve-url-loader'),
+                    options: {
+                        sourceMap: isEnvProduction && shouldUseSourceMap,
+                    },
+                    },
+                    {
+                    loader: require.resolve(preProcessor),
+                    options: {
+                        sourceMap: true,
+                        modifyVars:(preProcessor=='less-loader'?lessOptionsModifyVars:''),//修改options项
+                        javascriptEnabled: true,//修改options项
+                    },
+                    }
+                );
+            }
+        }
+        
+        ```

@@ -117,6 +117,7 @@ eventEmitter.emit(eventname,data);  //发送广播
 ```
 ##MongoDb数据库
 ```
+mongod --dbpath=D:/gss/db/dbData        启动数据库,地址是D:/gss/db/dbData
 mongo 127.0.0.1:27017  链接(远程)数据库
 show dbs 查看数据库列表
 use dbName 使用/创建数据库(创建数据库需要成功插入数据后才算创建成功)
@@ -161,7 +162,7 @@ db.cName.ensureIndex({"id":1,No:-1},{"unique":true}})		复合唯一索引
 ```
 >Windows上设置mongodb服务器自动启动
   1. 需要将启动mongodb添加到”服务”中去.
-  1. 管理员身份运行cmd
+  1. ************管理员身份运行cmd *************
   1. 在其中输入mongod --bind_ip 0.0.0.0 --logpath "C:\Program Files\MongoDB\Server\3.4\logs\mongodb.log" --logappend --dbpath "D:\MongDB-server" --port 27017 --serviceName "MongoDB" --serviceDisplayName "MongoDB" --install
      1. ip:0.0.0.0表示任何ip都能访问
      1. 软件安装位置:C:\Program Files\MongoDB\Server\3.4\logs\mongodb.log
