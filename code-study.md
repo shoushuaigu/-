@@ -1,3 +1,4 @@
 - [ ] [vuex 命名空间](https://vuex.vuejs.org/zh/guide/modules.html)
 - [ ] class对象初始化数据
 - [x] 动态组件
+- [ ] Echart
