@@ -50,12 +50,32 @@ var data = ['a','b','c']
 ReactDOM.render(
     <div>
         {arr}   {/*注释:直接引入变量,如果是数组,能展开其中的项*/}
-        data.map((item,index)=>{    {/*遍历返回结构,要加key值,便于react判断更新*/}
+        {data.map((item,index)=>{    {/*遍历返回结构,要加key值,便于react判断更新*/}
             return <span key={index}>{item}</span>
-        })
+        })}
     </div>
     document.getElementById('root')
 )
+
+class Sup extends React.Component{
+    render(){
+        return(
+            <ol>
+                {
+                    React.Children.map(this.props.children,item =>{ //React.Children.map是react的方法,便利children
+                        return <li>{item}</li>
+                    })
+                }  
+            </ol>
+            
+        )
+    }
+}
+<Sup num={124}>     //数字用{}
+<p>children</p>
+<p>props.children</p>
+</Sup>
+
 ```
 ###组件
 - 组件名必须大写开头

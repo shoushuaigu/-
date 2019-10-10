@@ -236,49 +236,226 @@
 // console.log(sub2.name)  //undefined
 
 // 原型式继承
-function object(o){     //es6中用Object.create()规范了此写法
-    function F(){}      //内部定义一个构造函数
-    F.prototype = o     //构造函数的原型接受(继承)传入的对象o
-    return new F()      //返回否早函数的实例
-}
+// function object(o){     //es6中用Object.create()规范了此写法
+//     function F(){}      //内部定义一个构造函数
+//     F.prototype = o     //构造函数的原型接受(继承)传入的对象o
+//     return new F()      //返回否早函数的实例
+// }
 
-var obj = {
-    name:'qq',
-    arr:[1]
-}
-var fo = object(obj)
-console.log(fo,fo.name,fo.arr)  //fo是{},因为没有实例属性,obj的属性在[[prototype]]上
-console.log('--------------')
+// var obj = {
+//     name:'qq',
+//     arr:[1]
+// }
+// var fo = object(obj)
+// console.log(fo,fo.name,fo.arr)  //fo是{},因为没有实例属性,obj的属性在[[prototype]]上
+// console.log('--------------')
 
-var o = Object.create(obj)  //可以理解为继承一个对象, 添加的属性是在原型下
-console.log(o)  //{}
-console.log(o.__proto__)    //{ name: 'qq', arr: [ 1 ] }
-console.log(o.name,o.arr)   //qq [ 1 ]
-var o2 = Object.create(obj,{name:{value:'kk'}}) //属性吗描述符不写默认为false
-console.log(o2) //{}
-console.log(o2.name,o2.arr) //kk [ 1 ]
-o.name = 'oo'
-o.arr.push(2)
-o2.name = 'll'  //不可写,不可枚举,不可配置
-console.log(o.name,o.arr,o2.name,o2.arr)    //oo [ 1, 2 ] kk [ 1, 2 ]
-console.log(Object.getOwnPropertyNames(o2)) //['name']  说明添加的属性是实例属性,只是没有设置可枚举
+// var o = Object.create(obj)  //可以理解为继承一个对象, 添加的属性是在原型下
+// console.log(o)  //{}
+// console.log(o.__proto__)    //{ name: 'qq', arr: [ 1 ] }
+// console.log(o.name,o.arr)   //qq [ 1 ]
+// var o2 = Object.create(obj,{name:{value:'kk'}}) //属性吗描述符不写默认为false
+// console.log(o2) //{}
+// console.log(o2.name,o2.arr) //kk [ 1 ]
+// o.name = 'oo'
+// o.arr.push(2)
+// o2.name = 'll'  //不可写,不可枚举,不可配置
+// console.log(o.name,o.arr,o2.name,o2.arr)    //oo [ 1, 2 ] kk [ 1, 2 ]
+// console.log(Object.getOwnPropertyNames(o2)) //['name']  说明添加的属性是实例属性,只是没有设置可枚举
 
-// Object.create()实现继承
-function Super(name) {
-    this.name = name
-}
-Super.prototype.getName = function () {
-    return this.name
-}
-function Sub(name){
-    Super.call(this,name)
-}
-Sub.prototype = Object.create(Super.prototype,{age:{value:19}}) //如果是构造函数的话(子类),需要用原型接收,因为Obejct.create()创建的是目标对象的[[prototype]],也就是子类实例的__proto__即子类原型对象
-Sub.prototype.constructor = Sub
-var s = new Sub('gss')
-console.log(s.name,s.getName(),s.age)     //gss,gss,19
-console.log(Object.getOwnPropertyNames(s.__proto__))    //[ 'age', 'constructor' ],age是在[[prototype]]上的,因为直接用子类构造函数的原型接收了
-console.log(s instanceof Sub)       //true
-console.log(s instanceof Super)     //true  原型链上出现过的构造函数都会返回true
+// // Object.create()实现继承
+// function Super(name) {
+//     this.name = name
+// }
+// Super.prototype.getName = function () {
+//     return this.name
+// }
+// function Sub(name){
+//     Super.call(this,name)
+// }
+// Sub.prototype = Object.create(Super.prototype,{age:{value:19}}) //如果是构造函数的话(子类),需要用原型接收,因为Obejct.create()创建的是目标对象的[[prototype]],也就是子类实例的__proto__即子类原型对象
+// Sub.prototype.constructor = Sub
+// var s = new Sub('gss')
+// console.log(s.name,s.getName(),s.age)     //gss,gss,19
+// console.log(Object.getOwnPropertyNames(s.__proto__))    //[ 'age', 'constructor' ],age是在[[prototype]]上的,因为直接用子类构造函数的原型接收了
+// console.log(s instanceof Sub)       //true
+// console.log(s instanceof Super)     //true  原型链上出现过的构造函数都会返回true
 
+// 寄生式继承
+// function createPerson (obj){
+//     var o = create(obj)     //用原型式创建新函数,继承传入对象的属性到原型
+//     o.sayName = function () {   //添加新对象的属性或方法
+//         console.log(o.name)
+//     }
+//     return o        //返回新对象
+// }
+// function create(o) {
+//     function F() {}
+//     F.prototype = o
+//     return new F()
+// }
 
+// var p = {
+//     name:'gss',
+//     age:19
+// }
+// var s = createPerson(p)
+// console.log(s)  //{ sayName: [Function] }
+// console.log(s.name)     //gss
+// console.log(s.sayName())    //gss
+
+// 寄生组合式继承
+// function Super (name){
+//     this.name = name
+// }
+// Super.prototype.getName = function () {
+//     return this.name
+// }
+// function Sub (age,name){
+//     Super.call(this,name)
+//     this.age = age
+// }
+// Sub.prototype = Super.prototype
+// Sub.prototype.constructor = Sub
+// Sub.prototype.getAge = function(){
+//     return this.age
+// }
+// var s = new Sub(19,'iii')
+// console.log(s)
+// console.log(s.getAge(),s.getName())
+
+// function mixPrototype ( sup, sub) {
+//     var prototype = sup.prototype
+//     prototype.constructor = sub
+//     sub.prototype = prototype
+// }
+// function Sub2 (age,name) {
+//     Super.call(this,name)
+//     this.age = age
+// }
+// mixPrototype(Super,Sub2)
+// Sub2.prototype.getAge = function () {
+//     return this.age
+// }
+// var s2 = new Sub2(90,'pp')
+// console.log(s2)
+// console.log(s2.getAge(),s2.getName())
+
+// 递归
+// function factorial(num){
+//     if(num <=1){
+//         return 1
+//     }else{
+//         return num*factorial(num-1)
+//     }
+// }
+// console.log(factorial(5))
+// console.log(5*4*3*2)
+
+// function Fibonacci (n) {
+//     if ( n <= 1 ) {return 1};
+//     return Fibonacci(n - 1) + Fibonacci(n - 2);
+// }
+// console.log(Fibonacci(5))
+
+// // 闭包
+
+// function bb() {
+//     var r = new Array()
+//     for(var i = 0;i<10;i++){
+//         (function (j) {
+//             r[j] = function () {
+//                 return j
+//             }
+//         })(i)
+//     }
+//     return r
+// }
+// var arr = bb()
+// console.log(arr)
+// console.log(arr[1](),arr[9]())
+
+// function Person(age){
+//     if(this instanceof Person){
+//         this.age = age
+//     }else{
+//         return new Person(age)
+//     }
+// }
+// function Son(age){
+//     Person.call(this,age)
+// }
+// var s = new Son(19)
+// console.log(s.age)
+// function Some(age){
+//     Person.call(this,age)
+// }
+// Some.prototype = new Person(44)
+// Some.prototype.constructor = Some
+// Some.prototype.name = 'gss'
+// var ss = new Some(10)
+// console.log(ss.age,ss.name)
+// console.log(Some.prototype.age)
+// console.log(Object.getOwnPropertyNames(ss))
+// console.log(Object.getOwnPropertyNames(ss.__proto__))
+// console.log(Object.getOwnPropertyNames(Some.prototype))
+// console.log(typeof {})
+
+// 单例模式
+
+// class Person{
+//     constructor(name,age){
+//         this.name = name
+//         this.age = age
+//     }
+//     getName(){
+//         return this.name
+//     }
+//     static getInstance(){
+//         if(!Person.ins){
+//             Person.ins = new Person(...arguments)
+//         }
+//         return Person.ins
+//     }
+// }
+// Person.ins = null
+// var p1 = Person.getInstance('gss',18)
+// var p2 = Person.getInstance('vic',18)
+// // console.log('====================================');
+// // console.log(p1);
+// // console.log(p2);
+// // console.log(p2.getName());
+// // console.log('====================================');
+
+// var getInstance = function (fn) {
+//     var ins = null
+//     return function(){
+//         return ins || (ins = fn.apply(this,arguments))
+//     }
+// }
+
+// function per(name,age){
+//     return{name:name,age:age}
+// }
+// var p3 = getInstance(per)('gss',19)
+// console.log(p3)
+
+class Person{
+    constructor(name,age){
+        this.name = name
+        this.age = age
+    }
+    getName(){
+        return this.name
+    }
+    static getInstance(){   //静态方法获取实例,不会被实例继承
+        if(!Person.ins){    //Person.ins静态属性
+            Person.ins = new Person(...arguments)
+        }
+        return Person.ins
+    }
+}
+var p1 = Person.getInstance('gss',19)  //gss,19
+var p2 = Person.getInstance('vic',20)  //gss,19
+console.log(p1,p2)
+console.log(p2.getName())

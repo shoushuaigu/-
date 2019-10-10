@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>designMode</title>
+    <style>
+        .box{
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            width: 200px;
+            margin-left: -100px;
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 10px;
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <button class="btn">弹框提示</button>
+    </div>
+    <script>
+        var app = document.getElementById('app')
+        var btn = document.querySelector('.btn')
+        btn.onclick = function(){
+            console.log(handleCreate() === handleCreate())
+            app.appendChild(handleCreate())
+            document.querySelector('.box').style.display = 'block'
+        }
+
+        var createMsgBox = function () {
+            var box = document.createElement('div')
+            box.className = 'box'
+            var html = `<h4>提示</h4><p>单例提示框</p><button class="close" onclick="handleClose()">关闭</button>`
+            box.innerHTML = html
+            return box
+        }
+        
+        var des = function (fn) {
+            var ins = null
+            return function(){
+                return ins || (ins = fn.apply(this,arguments))
+            }
+        }
+        var handleCreate = des(createMsgBox)
+
+        
+        var handleClose = function () {
+            document.querySelector('.box').style.display = 'none'
+        }
+    </script>
+</body>
+</html>

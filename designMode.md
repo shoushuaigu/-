@@ -180,6 +180,7 @@ console.log(p1.sayName === p2.sayName)   //false
     >Object.__proto__ === null
 - constructor
     >是prorotype的默认属性,指向原型对象所属的函数即:Person.prototype.constructor === Person;可手动更改此属性,使其指向其他函数
+    >实例也能调用constructor属性,指向其构造函数p.constructor === Person
 - [[prototype]] **__proto__**
     >实例的一个指针,在浏览器中用__proto__;指向其构造函数原型对象;即:p1.__proto__ === Person.prototype
 - isPrototypeOf()
@@ -413,6 +414,7 @@ console.log(Object.getOwnPropertyNames(sub))    //[ 'name', 'arr', 'age' ]
 ```
 - 组合继承
 >结合原型链和构造函数继承
+>组合式继承回调用两次Super,(Super.call(),Sub.prototype = new Super())
 ```js
 function Super(name){
     this.name = name
@@ -506,10 +508,122 @@ console.log(Object.getOwnPropertyNames(s.__proto__))    //[ 'age', 'constructor'
 console.log(s instanceof Sub)       //true
 console.log(s instanceof Super)     //true  原型链上出现过的构造函数都会返回true
 ```
+- 寄生式继承
+>在主要考虑对象而不是自定义类型或构造函数情况下可以使用
+>和寄生构造函数和工厂函数相似
+>缺点:和构造函数一样,方法不能共享复用
+```js
+function createPerson (obj){
+    var o = create(obj)     //用原型式创建新函数,继承传入对象的属性到原型
+    o.sayName = function () {   //添加新对象的属性或方法
+        console.log(o.name)
+    }
+    return o        //返回新对象
+}
+function create(o) {
+    function F() {}
+    F.prototype = o
+    return new F()
+}
+
+var p = {
+    name:'gss',
+    age:19
+}
+var s = createPerson(p)
+console.log(s)  //{ sayName: [Function] }
+console.log(s.name)     //gss
+console.log(s.sayName())    //gss
+```
+- 寄生组合式继承
+>组合式继承回调用两次Super,(Super.call(),Sub.prototype = new Super())
+>就是用构造函数继承实例属性,原型链继承原型属性,同上边构造函数继承的改版
+```js
+function Super (name){
+    this.name = name
+}
+Super.prototype.getName = function () {
+    return this.name
+}
+function Sub (age,name){
+    Super.call(this,name)
+    this.age = age
+}
+Sub.prototype = Super.prototype
+Sub.prototype.constructor = Sub
+Sub.prototype.getAge = function(){
+    return this.age
+}
+var s = new Sub(19,'iii')
+console.log(s)
+console.log(s.getAge(),s.getName())
+
+function mixPrototype ( sup, sub) {
+    var prototype = sup.prototype
+    prototype.constructor = sub
+    sub.prototype = prototype
+}
+function Sub2 (age,name) {
+    Super.call(this,name)
+    this.age = age
+}
+mixPrototype(Super,Sub2)
+Sub2.prototype.getAge = function () {
+    return this.age
+}
+var s2 = new Sub2(90,'pp')
+console.log(s2)
+console.log(s2.getAge(),s2.getName())
+```
 ---
 
 ## 单例模式
+>核心思想是确保一个类只对应一个实例。
+>每次调用构造函数时，返回指向同一个对象的指针。 也就是说，我们只在第一次调用构造函数时创建新对象，之后调用返回时返回该对象即可
+- 弹框实例
+```js
+var des = function (fn) {   //单例方法函数
+    var ins = null
+    return function(){
+        return ins || (ins = fn.apply(this,arguments))
+    }
+}
+var createMsgBox = function () {    //创建弹框的方法
+    var box = document.createElement('div')
+    box.className = 'box'
+    var html = `<h4>提示</h4><p>单例提示框</p><button class="close" onclick="handleClose()">关闭</button>`
+    box.innerHTML = html
+    return box
+}
+var handleCreate = des(createMsgBox)    //实现单例
 
+btn.onclick = function(){   //点击添加弹框
+    console.log(handleCreate() === handleCreate())  //true,每次点击返回的都是同一个弹框
+    app.appendChild(handleCreate()) //添加弹框
+    document.querySelector('.box').style.display = 'block'
+}
+```
+- 单例类
+```js
+class Person{
+    constructor(name,age){
+        this.name = name
+        this.age = age
+    }
+    getName(){
+        return this.name
+    }
+    static getInstance(){
+        if(!Person.ins){
+            Person.ins = new Person(...arguments)
+        }
+        return Person.ins
+    }
+}
+var p1 = getInstance('gss',19)  //gss,19
+var p2 = getInstance('vic',20)  //gss,19
+p2.getName()        //gss
+```
 ## 观察者模式(发布-订阅模式)
 
 
