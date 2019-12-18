@@ -564,6 +564,7 @@ Object.freeze(obj)  阻止修改现有数据,也就是说修改obj也不会再�
 ```
 ---
 ###[生命周期详解](https://www.cnblogs.com/goloving/p/8616989.html)
+![](images/vue生命周期.jpg)
 
 ###生命周期之updated，dom元素更新(渲染)完成，如果要操作DOM，可以在此执行。一般用computed和watch替代
 ```javascript
@@ -738,6 +739,7 @@ export default{
 ```
 ####动态组件，常用切换效果 用 Vue 的 <component> 元素加一个特殊的 is 特性来实现
 [动态组件例子](https://jsfiddle.net/chrisvfritz/o3nycadu/)
+![](./images/动态组件.jpg)
 ```javascript
     import c1 from './components/c1'
     import c2 from './components/c2'
@@ -754,6 +756,26 @@ export default{
         bus.$on('事件名',data=>{获取数据回调}) 监听事件
     4.设置props default 确保子组件中用到的数据键、类型都存在
     5.vuex    
+```
+####父组件传递事件给子组件
+```html
+  <div @click="sendChild"></div>
+  <child ref="child"></child>
+```
+```js
+// 父组件中
+methods:{
+  sendChild(){
+    this.$refs.child.getChild('父组件传递的数据')
+  }
+}
+//子组件中
+methods:{
+  gethild(data){
+    onsole.log(data)  //父组件传递的数据
+    // 子组件内即可实现相关逻辑操作
+  }
+}
 ```
 ####异步组件
 >解决项目过大，按需加载，懒加载组件
