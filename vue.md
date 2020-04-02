@@ -551,6 +551,54 @@ new Vue({
 ```
 ![](images/nexttick.png)
 >msg1和msg3显示的内容还是变换之前的，而msg2显示的内容是变换之后的。其根本原因是因为Vue中DOM更新是异步的
+## $mount
+>手动挂载: 1.挂载vue实例;2.挂载vue扩展(通过Vue.extend()构造器创建的子类;)
+注意:未挂载的实例或扩展无法获取$el
+```js
+// 挂载vue实例
+new Vue({
+  render: h => h(App)
+}).$mount('#app')
+new Vue({
+  el: '#app',
+  render: h => h(App)
+})
+```
+- 以上实例化vue并挂载到'#app'元素方式没有本质不同
+- $mount()接收两个参数
+  - el:挂载的元素,可以是css选择器或dom对象
+  - 第二个参数是和服务端渲染相关，在浏览器环境下不需要传第二个参数
+```js
+// 挂载vue扩展
+const MyComponent = Vue.extend({ // 通过extend创建子类
+  template:'<div>Hello!</div>'
+})
+const comp = new MyComponent().$mount(document.createElement('div')) // 将扩展实例化,并挂载到新创建的dom对象
+// 或者
+const comp = new MyComponent({el:document.createElement('div')})
+document.body.appendChild(comp.$el) // 扩展实例的$el属性获得dom对象
+```
+---
+## Vue.extend()
+>使用基础 Vue 构造器，创建一个“子类”。参数是一个包含组件选项的对象。
+```js
+// 创建构造器
+var Profile = Vue.extend({ // 组件选项的对象,也可直接引入组件
+  template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>',
+  data: function () {
+    return {
+      firstName: 'Walter',
+      lastName: 'White',
+      alias: 'Heisenberg'
+    }
+  }
+})
+// 创建 Profile 实例，并挂载到一个元素上。
+new Profile().$mount('#mount-point')
+
+import Message from './Message.vue'
+var Profile = Vue.extend(Message) // 直接引入组件
+```
 ##官方文档知识点
 ```html
 <div id="app-2">
