@@ -127,6 +127,11 @@ git rm --cached [file]  删除暂存区文件
 build/      #忽略build/目录下的所有文件
 doc/*.txt   #会忽略 doc/notes.txt 但不包括 doc/server/arch.txt
 ```
+- Tag操作
+```
+git tag -a v2.0 -m 描述         创建tag为v2.0并添加描述
+git push origin v2.0            推送v2.0tag到远程
+```
 ### 分支
 #### 操作指令
 ```
@@ -150,6 +155,7 @@ git rebase [remote-name]/[branch]   同上
 git branch -d [branch]      删除分支
 git push origin --delete [branch]       删除远程分支
 git branch -dr origin/dev       删除远程分支dev(-d:删除,-r:远程)
+git remote prune origin         同步远程分支和本地显示的远程分支(远程删除了某分支,但本地查看远程分支时还有)
 ```
 ### 远程仓库操作
 #### 指令

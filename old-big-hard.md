@@ -1,7 +1,8 @@
 #老大难问题要彻底理解解决
-##viewport 屏幕适配 px rem ua标识 相关
->像素：
-
+###viewport 屏幕适配 px rem ua标识 相关
+[移动端适配](https://segmentfault.com/a/1190000019138515)
+#### 像素：
+```
     物理像素(设备像素、屏幕分辨率)  固定不变 （较大）    iPhone6 750px*1334px
     设备独立像素（密度无关像素） （较小）               375px*667px
     设备像素比（dpr） = 物理像素 / 独立像素；通过window.devicePixelRatio获取
@@ -12,8 +13,9 @@
         iPhone6为例：物理像素750，如果没设置布局视口 viewport是980px，此时1物理像素长度等于980/750=1.3067px，既1物理像素=1.3067px*1.3067px。此时为不清晰的。
         设置布局视口后<meta name="viewport" content="width=device-width">既视口宽度=设备宽度（设备独立像素）。iPhone6就是375px
         375/750=0.5px。既1物理像素=0.5px*0.5px（像素都是点阵的）。
->视口：
-
+```
+#### 视口：
+```
     布局视口viewport 故布局视口是看不见的，浏览器厂商设置的一个固定值，如980px，并将980px的内容缩放到手机屏内。
     document.documentElement.clientWidth    //布局视口宽
 
@@ -30,40 +32,57 @@
         initial-scale是将布局视口进行缩放,
         <meta name="viewport" content="width=device-width,initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5, user-scalable=no"> 
         initial-scale=0.5,即将视口缩小2倍后等于屏幕宽度。width / 2 = 375px; width = 750px;所以此时布局视口为750px，此时1px等于1物理像素。
->适配方案
+```
+#### rem适配
+```
+rem是相对于根元素的字体大小的单位，也就是html的font-size大小，浏览器默认的字体大小是16px，所以默认的1rem=16px.
+事实上 rem是把屏幕等分成 指定的份数，以20份为例，每份为 1rem ， 1rem 对应的大小就是 rem基准值 ，rem做的就是把 rem基准值 给<html>的 font-size ，所以如果设备的 物理像素 宽为 640px ，分成20份，那么 1rem=640px/20=32px , <html>的 font-size为32px 。
+当然，你也可以分成30份，40份，60份等等，这个看自己的喜好了
+在我们实际切图的时候，对于视觉稿上的元素尺寸换算，只需要元素的 原始的px值(即你量的大小) 除以 rem基准值 即可。例如设计稿的大小为640px， rem基准值 = 640px/20 = 32px ，有个元素的大小你量出来是 140px286px* 
 
-```javascript
-    // 以750设计稿为例
-    var clientW = document.documentElement.clientWidth>750?750:document.documentElement.clientWidth;     //视口宽度
-    // 可以判断document.documentElement.clientWidth大小，跳转pc和m站
-    document.documentElement.style.fontSize=clientW/7.5 +'px';  //动态设置根元素font-size
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1, minimum-scale=1">   //缩放比例固定为1；
-    // 此时转成rem既设计图尺寸/100即可
-    // 字体大小设置，用媒体查询控制，不能用rem
-    @media screen and (max-width:321px){
-        .m-navlist{font-size:15px}
+//这段代码放在head标签里面
+(function () {
+    var html = document.documentElement;
+ 
+    function onWindowResize() {
+        html.style.fontSize = html.getBoundingClientRect().width / 20 + 'px';
     }
+ 
+    window.addEventListener('resize', onWindowResize);
+    onWindowResize();
+})();
 
-    @media screen and (min-width:321px) and (max-width:400px){
-        .m-navlist{font-size:16px}
-    }
+140px = 140/32 = 4.375rem
+286px = 286/32 = 8.9375rem
+```
+#### rem+vw适配
+vw : 1vw 等于视口宽度的1%
+vh : 1vh 等于视口高度的1%
+第一步:设置meta标签
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+```
+第二部:设置html的font-size
+```css
+html{
+    font-size:13.33333333vw
+}
+```
+为什么是13.3333vw
+以设计图750px为例
+100vw == 750px
+1px = 0.1333333333vw
+方便计算设根元素font-size:100px即13.3333vw
+1rem == 100px == 13.3333vw
+这样既能动态改变根元素的字体大小又方便计算
 
-    @media screen and (min-width:400px){
-        .m-navlist{font-size:18px}
-    }
-
-    /*
-        换算过程
-            如果根元素为100px，那么1rem=100px
-            设计稿750px
-            一个设备的宽度就是750px，并且我给这个宽度为750px设备的根元素设置为100px,这样1rem就等于100px了
-            750/100 = 750/100
-            另一个设备：要想与设计稿的效果一样，就要进行等比例缩放
-                clientW 视口宽
-                x   根字体大小
-                clientW/x = 750/100         x=clientW/7.5
-
-    */
+当我们通过ps测量一个div的大小为 width:200px,height:137px时，我们就可以这样写，ps量出来的像素直接除以100，计算小数很方便
+```css
+div {
+  width: 2rem;
+  height:1.37rem;
+ 
+ }
 ```
 
 ##模块化 工程化
